@@ -1,0 +1,2 @@
+FLASK_APP=cms_api
+FLASK_DEBUG=True
