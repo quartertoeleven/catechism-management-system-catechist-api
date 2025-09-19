@@ -10,6 +10,7 @@ sqlalchemy = "*"
 psycopg = {extras = ["binary", "pool"], version = "*"}
 flask-cors = "*"
 gunicorn = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
