@@ -4,6 +4,7 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+from .models.base import db, migrate
 from .api_blueprints import register_blueprints
 
 def create_app(test_config=None):
@@ -37,6 +38,9 @@ def create_app(test_config=None):
         supports_credentials=True,
         origins=os.getenv("CORS_ORIGINS").split(",")
     )
+
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     register_blueprints(app, '/api')
 

@@ -15,8 +15,8 @@ class UserAccount(db.Model):
         default=uuid4,
         server_default=db.func.gen_random_uuid(),
     )
-    login_id = Column(String(100), nullable=False, unique=True)
+    login_id = Column(String(100), nullable=False, unique=True, index=True)
     password = Column(Text, nullable=False)
     catechist_id = Column(
-        UUID(as_uuid=True), ForeignKey("catechists.id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"), nullable=True
     )

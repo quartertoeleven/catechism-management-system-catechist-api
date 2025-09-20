@@ -11,6 +11,8 @@ psycopg = {extras = ["binary", "pool"], version = "*"}
 flask-cors = "*"
 gunicorn = "*"
 flask-sqlalchemy = "*"
+flask-migrate = "*"
+alembic-postgresql-enum = "*"
 
 [dev-packages]
 
