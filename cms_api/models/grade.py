@@ -8,7 +8,7 @@ class Grade(db.Model):
     __tablename__ = "grades"
 
     id = Column(Integer, primary_key=True)
-    code = Column(String(10), nullable=False, unique=True, index=True)
+    code = Column(String(20), nullable=False, unique=True, index=True)
     name = Column(String(100), nullable=False)
     head_catechist_id = Column(
         UUID(as_uuid=True),
