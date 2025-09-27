@@ -20,3 +20,8 @@ class UserAccount(db.Model):
     catechist_id = Column(
         UUID(as_uuid=True), ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"), nullable=True
     )
+
+    # pubic functions
+    @classmethod
+    def find_by_login_id(cls, login_id):
+        return cls.query.filter_by(login_id=login_id).first()

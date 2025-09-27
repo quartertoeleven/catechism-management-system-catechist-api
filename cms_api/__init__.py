@@ -5,7 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from .models.base import db, migrate
-from .api_blueprints import register_blueprints
+from .blueprints import register_blueprints
 
 def create_app(test_config=None):
     load_dotenv()

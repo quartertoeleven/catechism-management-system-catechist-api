@@ -13,6 +13,7 @@ gunicorn = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 alembic-postgresql-enum = "*"
+flask-login = "*"
 
 [dev-packages]
 
