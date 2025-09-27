@@ -1,32 +1,44 @@
-from sqlalchemy import Column, String, Enum, Integer, ForeignKey, Date, Boolean, PrimaryKeyConstraint, DateTime
+from sqlalchemy import (
+    Column,
+    String,
+    Enum,
+    Integer,
+    ForeignKey,
+    Date,
+    Boolean,
+    PrimaryKeyConstraint,
+    DateTime,
+)
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import db
-from ..helpers.enums import AttendanceStatusEnum
+from . import Student, GradeSchedule
+from ..helpers.enums import AttendanceStatusEnum, AttendanceTypeEnum
 
 
 class StudentAttendance(db.Model):
     __tablename__ = "student_attendances"
-    __table_args__ = (
-        PrimaryKeyConstraint("student_id", "grade_schedule_id"),
-    )
+    __table_args__ = (PrimaryKeyConstraint("student_id", "grade_schedule_id", "type"),)
 
     student_id = Column(
         UUID(as_uuid=True),
         ForeignKey("students.id", ondelete="cascade", onupdate="cascade"),
-        nullable=False
+        nullable=False,
     )
     grade_schedule_id = Column(
         Integer,
         ForeignKey("grade_schedules.id", ondelete="cascade", onupdate="cascade"),
-        nullable=False
+        nullable=False,
     )
-    mass_status = Column(Enum(AttendanceStatusEnum), nullable=False, default=AttendanceStatusEnum.ABSENT, server_default=AttendanceStatusEnum.ABSENT.name)
-    is_mass_absence_notified = Column(Boolean, default=False, server_default="false")
-    lesson_status = Column(Enum(AttendanceStatusEnum), nullable=False, default=AttendanceStatusEnum.ABSENT, server_default=AttendanceStatusEnum.ABSENT.name)
-    is_lesson_absence_notified = Column(Boolean, default=False, server_default="false")
-    mass_absence_reason = Column(String(100))
-    lesson_absence_reason = Column(String(100))
+    type = Column(Enum(AttendanceTypeEnum), nullable=False)
+    status = Column(
+        Enum(AttendanceStatusEnum),
+        nullable=False,
+        default=AttendanceStatusEnum.ABSENT,
+        server_default=AttendanceStatusEnum.ABSENT.name,
+    )
+    is_notified_absence = Column(Boolean, default=False, server_default="false")
+    note = Column(String(100))
     catechist_id = Column(
         UUID(as_uuid=True),
         ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"),
@@ -35,4 +47,14 @@ class StudentAttendance(db.Model):
 
     @classmethod
     def find_by_grade_schedule_id_and_student_id(cls, grade_schedule_id, student_id):
-        return cls.query.filter_by(student_id=student_id, grade_schedule_id=grade_schedule_id).first()
+        return cls.query.filter_by(
+            student_id=student_id, grade_schedule_id=grade_schedule_id
+        ).first()
+
+    @classmethod
+    def find_by_grade_schedule_id_and_student_id_and_type(
+        cls, grade_schedule: GradeSchedule, student: Student, type: AttendanceTypeEnum
+    ):
+        return cls.query.filter_by(
+            student_id=student.id, grade_schedule_id=grade_schedule.id, type=type
+        ).first()
