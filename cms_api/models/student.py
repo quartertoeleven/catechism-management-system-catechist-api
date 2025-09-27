@@ -22,3 +22,7 @@ class Student(db.Model):
     first_name = Column(String(30), nullable=False)
     gender = Column(Enum(GenderEnum), nullable=False)
 
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query.filter_by(code=code).first()
+

@@ -20,3 +20,7 @@ class GradeSchedule(db.Model):
     grade_id = Column(
         ForeignKey("grades.id", ondelete="cascade", onupdate="cascade"), nullable=False
     )
+
+    @classmethod
+    def find_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()

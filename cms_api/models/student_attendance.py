@@ -32,3 +32,7 @@ class StudentAttendance(db.Model):
         ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"),
     )
     check_time = Column(DateTime)
+
+    @classmethod
+    def find_by_grade_schedule_id_and_student_id(cls, grade_schedule_id, student_id):
+        return cls.query.filter_by(student_id=student_id, grade_schedule_id=grade_schedule_id).first()

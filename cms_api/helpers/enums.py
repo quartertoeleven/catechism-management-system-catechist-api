@@ -18,3 +18,7 @@ class SemesterEnum(enum.Enum):
 class AttendanceStatusEnum(enum.Enum):
     PRESENT = "present"
     ABSENT = "absent"
+
+class AttendanceTypeEnum(enum.Enum):
+    LESSON = "lesson"
+    MASS = "mass"
