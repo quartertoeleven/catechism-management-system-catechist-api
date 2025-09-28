@@ -3,10 +3,12 @@ from uuid import uuid4
 from sqlalchemy import Column, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 
+from flask_login import UserMixin
+
 from .base import db
 
 
-class UserAccount(db.Model):
+class UserAccount(db.Model, UserMixin):
     __tablename__ = "user_accounts"
 
     id = Column(
@@ -23,5 +25,5 @@ class UserAccount(db.Model):
 
     # pubic functions
     @classmethod
-    def find_by_login_id(cls, login_id):
+    def find_by_login_id(cls, login_id) -> "UserAccount":
         return cls.query.filter_by(login_id=login_id).first()
