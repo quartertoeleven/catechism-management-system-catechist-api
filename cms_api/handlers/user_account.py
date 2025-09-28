@@ -4,8 +4,8 @@ from werkzeug.security import generate_password_hash
 
 from ..helpers.constants import VALID_EMAIL_REGEX
 
-from ..models import UserAccount, OperationResult
-from ..models.base import db
+from ..models import UserAccount
+from ..models.base import db, OperationResult
 
 
 def __generate_strong_password(length=16):

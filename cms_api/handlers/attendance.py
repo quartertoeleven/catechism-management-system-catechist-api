@@ -1,7 +1,7 @@
 from ..helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
 
-from ..models import Student, StudentAttendance, GradeSchedule, OperationResult
-from ..models.base import db
+from ..models import Student, StudentAttendance, GradeSchedule
+from ..models.base import db, OperationResult
 
 
 def __create_new_student_attendance_with_default_values(

@@ -12,6 +12,3 @@ from .unit_student import UnitStudent
 from .general_schedule import GeneralSchedule
 from .grade_schedule import GradeSchedule
 from .student_attendance import StudentAttendance
-
-# The models from here on is not for database storage
-from .operation_result import OperationResult

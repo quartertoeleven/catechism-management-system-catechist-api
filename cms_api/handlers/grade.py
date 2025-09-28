@@ -1,4 +1,5 @@
-from ..models import Grade, GradeSchedule, OperationResult
+from ..models import Grade, GradeSchedule
+from ..models.base import OperationResult
 
 def get_grade_schedules(grade_code):
     grade = Grade.get_by_code(grade_code)

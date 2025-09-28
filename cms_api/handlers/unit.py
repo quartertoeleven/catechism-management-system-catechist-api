@@ -1,4 +1,5 @@
-from ..models import Unit, OperationResult
+from ..models import Unit
+from ..models.base import OperationResult
 
 # def _get_unit_students(unit: Unit):
 #     unit_students = unit.students
