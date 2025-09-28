@@ -63,10 +63,3 @@ def handle_attendance_check(grade_schedule_id, attendance_check_dict) -> Operati
     )
 
     return OperationResult(success=True, message="Attendance checked done")
-
-    # type = attendance_check_dict.get('type')
-    # student_id = attendance_check_dict.get('student_id')
-    # if type == AttendanceType.MASS:
-    #     return "mass"
-    # elif type == AttendanceType.LESSON:
-    #     return "lesson"

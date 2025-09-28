@@ -23,6 +23,15 @@ class Student(db.Model):
     gender = Column(Enum(GenderEnum), nullable=False)
 
     @classmethod
-    def find_by_code(cls, code):
+    def find_by_code(cls, code) -> "Student":
         return cls.query.filter_by(code=code).first()
-
+    
+    def to_dict(self):
+        return dict(
+            code=self.code,
+            saint_name=self.saint_name,
+            last_name=self.last_name,
+            middle_name=self.middle_name,
+            first_name=self.first_name,
+            gender=self.gender
+        )

@@ -27,3 +27,10 @@ class Grade(db.Model):
         ForeignKey("study_years.id", ondelete="set null", onupdate="cascade"),
         nullable=False,
     )
+
+    # relationship
+    units = db.relationship("Unit", backref="grade", order_by="Unit.code")
+
+    @classmethod
+    def get_by_code(cls, grade_code: String) -> "Grade":
+        return cls.query.filter_by(code=grade_code).first()

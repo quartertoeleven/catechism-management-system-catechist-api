@@ -14,3 +14,15 @@ class Unit(db.Model):
         ForeignKey("grades.id", ondelete="cascade", onupdate="cascade"),
         nullable=False,
     )
+    # relationship
+    students = db.relationship("Student", secondary="unit_students", order_by="Student.first_name")
+
+    @classmethod
+    def find_by_code(cls, unit_code) -> "Unit":
+        return cls.query.filter_by(code=unit_code).first()
+    
+    def to_dict(self):
+        return dict(
+            code=self.code,
+            name=self.name
+        )
