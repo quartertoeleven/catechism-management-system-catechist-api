@@ -8,6 +8,7 @@ from .attendance_bp import attendance_bp
 
 from .cli.user_account_cli import user_account_cli_bp
 
+
 def register_blueprints(app, url_prefix):
     app.register_blueprint(health_check_bp, url_prefix=url_prefix)
     app.register_blueprint(auth_bp, url_prefix=url_prefix)

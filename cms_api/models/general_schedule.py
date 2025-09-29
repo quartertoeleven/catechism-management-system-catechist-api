@@ -11,9 +11,14 @@ class GeneralSchedule(db.Model):
     semester = Column(Enum(SemesterEnum), nullable=False)
     date = Column(Date, nullable=False)
     mass_content = Column(String(100), nullable=False)
-    is_mass_attendance_check = Column(Boolean, nullable=False, default=True, server_default="true")
+    is_mass_attendance_check = Column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
     lesson_content = Column(String(100), nullable=False)
-    is_lesson_attendance_check = Column(Boolean, nullable=False, default=True, server_default="true")
+    is_lesson_attendance_check = Column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
     study_year_id = Column(
-        ForeignKey("study_years.id", ondelete="cascade", onupdate="cascade"), nullable=False
+        ForeignKey("study_years.id", ondelete="cascade", onupdate="cascade"),
+        nullable=False,
     )

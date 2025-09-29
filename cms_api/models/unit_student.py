@@ -3,9 +3,10 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from .base import db
 
+
 class UnitStudent(db.Model):
     __tablename__ = "unit_students"
-    __table_args__ = (PrimaryKeyConstraint("student_id", "unit_id"), )
+    __table_args__ = (PrimaryKeyConstraint("student_id", "unit_id"),)
 
     student_id = Column(
         UUID(as_uuid=True),

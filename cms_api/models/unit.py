@@ -15,16 +15,17 @@ class Unit(db.Model):
         nullable=False,
     )
     # relationship
-    students = db.relationship("Student", secondary="unit_students", order_by="Student.first_name")
-    catechists = db.relationship("Catechist", secondary="unit_catechists", order_by="Catechist.first_name")
+    students = db.relationship(
+        "Student", secondary="unit_students", order_by="Student.first_name"
+    )
+    catechists = db.relationship(
+        "Catechist", secondary="unit_catechists", order_by="Catechist.first_name"
+    )
     grade = db.relationship("Grade", backref="units")
 
     @classmethod
     def find_by_code(cls, unit_code) -> "Unit":
         return cls.query.filter_by(code=unit_code).first()
-    
+
     def to_dict(self):
-        return dict(
-            code=self.code,
-            name=self.name
-        )
+        return dict(code=self.code, name=self.name)

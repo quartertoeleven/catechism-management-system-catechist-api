@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from .base import db
 from ..helpers.enums import GenderEnum
 
+
 class Student(db.Model):
     __tablename__ = "students"
 
@@ -25,7 +26,7 @@ class Student(db.Model):
     @classmethod
     def find_by_code(cls, code) -> "Student":
         return cls.query.filter_by(code=code).first()
-    
+
     def to_dict(self):
         return dict(
             code=self.code,
@@ -33,5 +34,5 @@ class Student(db.Model):
             last_name=self.last_name,
             middle_name=self.middle_name,
             first_name=self.first_name,
-            gender=self.gender
+            gender=self.gender,
         )

@@ -20,7 +20,9 @@ class UserAccount(db.Model, UserMixin):
     login_id = Column(String(100), nullable=False, unique=True, index=True)
     password = Column(Text, nullable=False)
     catechist_id = Column(
-        UUID(as_uuid=True), ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"), nullable=True
+        UUID(as_uuid=True),
+        ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"),
+        nullable=True,
     )
     # relationship
     catechist = db.relationship("Catechist", backref="user_account")
@@ -29,13 +31,13 @@ class UserAccount(db.Model, UserMixin):
     @classmethod
     def find_by_login_id(cls, login_id) -> "UserAccount":
         return cls.query.filter_by(login_id=login_id).first()
-    
+
     @classmethod
     def find_by_id(cls, id) -> "UserAccount":
         return cls.query.filter_by(id=id).first()
-    
+
     def to_dict(self):
         return dict(
-            login_id = self.login_id,
-            catechist = self.catechist.to_dict() if self.catechist is not None else None
+            login_id=self.login_id,
+            catechist=self.catechist.to_dict() if self.catechist is not None else None,
         )

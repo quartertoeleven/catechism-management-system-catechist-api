@@ -12,9 +12,13 @@ class GradeSchedule(db.Model):
     semester = Column(Enum(SemesterEnum), nullable=False)
     date = Column(Date, nullable=False)
     mass_content = Column(String(100), nullable=False)
-    is_mass_attendance_check = Column(Boolean, nullable=False, default=True, server_default="true")
+    is_mass_attendance_check = Column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
     lesson_content = Column(String(100), nullable=False)
-    is_lesson_attendance_check = Column(Boolean, nullable=False, default=True, server_default="true")
+    is_lesson_attendance_check = Column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
     general_schedule_id = Column(
         ForeignKey("general_schedules.id", ondelete="set null", onupdate="set null")
     )
@@ -25,11 +29,11 @@ class GradeSchedule(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
-    
+
     @classmethod
     def get_schedules_for_grade(cls, grade: Grade):
         return cls.query.filter_by(grade_id=grade.id).order_by(cls.date.desc).all()
-    
+
     def to_dict(self):
         return dict(
             id=self.id,
@@ -40,6 +44,5 @@ class GradeSchedule(db.Model):
             lesson_content=self.lesson_content,
             is_lesson_attendance_check=self.is_lesson_attendance_check,
             general_schedule_id=self.general_schedule_id,
-            grade_id=self.grade_id
+            grade_id=self.grade_id,
         )
-
