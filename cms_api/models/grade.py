@@ -30,7 +30,14 @@ class Grade(db.Model):
 
     # relationship
     units = db.relationship("Unit", backref="grade", order_by="Unit.code")
+    study_year = db.relationship("StudyYear", backref="grades", lazy="subquery")
 
     @classmethod
     def get_by_code(cls, grade_code: String) -> "Grade":
         return cls.query.filter_by(code=grade_code).first()
+    
+    def to_dict(self):
+        return dict(
+            code=self.code,
+            name=self.name
+        )

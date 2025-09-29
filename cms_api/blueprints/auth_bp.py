@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask.views import MethodView
 from flask_login import login_required
 
-from ..handlers.auth import login, logout
+from ..handlers.auth import login, logout, get_auth_state
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -18,6 +18,13 @@ class LogoutAPI(MethodView):
     def post(self):
         result = logout()
         return result.to_json_response()
+    
+class LoginStateAPI(MethodView):
+    decorators = [login_required]
+
+    def get(self):
+        current_login_user_result = get_auth_state()
+        return current_login_user_result.to_json_response()
 
 auth_bp.add_url_rule(
     '/login',
@@ -29,5 +36,11 @@ auth_bp.add_url_rule(
     '/logout',
     view_func=LogoutAPI.as_view('logout_endpoint'),
     methods=['POST']
+)
+
+auth_bp.add_url_rule(
+    '/auth-state',
+    view_func=LoginStateAPI.as_view('login_state_endpoint'),
+    methods=['GET']
 )
 

@@ -16,6 +16,8 @@ class Unit(db.Model):
     )
     # relationship
     students = db.relationship("Student", secondary="unit_students", order_by="Student.first_name")
+    catechists = db.relationship("Catechist", secondary="unit_catechists", order_by="Catechist.first_name")
+    grade = db.relationship("Grade", backref="units")
 
     @classmethod
     def find_by_code(cls, unit_code) -> "Unit":

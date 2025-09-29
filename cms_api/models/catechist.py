@@ -22,3 +22,20 @@ class Catechist(db.Model):
     middle_name = Column(String(30))
     first_name = Column(String(30), nullable=False)
     gender = Column(Enum(GenderEnum), nullable=False)
+    
+    # relationship
+    units = db.relationship("Unit", secondary="unit_catechists", order_by="Unit.code")
+
+    @classmethod
+    def find_by_id(cls, id) -> 'Catechist':
+        return cls.query.filter_by(id=id).first()
+
+    def to_dict(self):
+        return dict(
+            title=self.title,
+            saint_name=self.saint_name,
+            last_name=self.last_name,
+            middle_name=self.middle_name,
+            first_name=self.first_name,
+            gender=self.gender,
+        )

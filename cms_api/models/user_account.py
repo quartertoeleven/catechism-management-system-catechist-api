@@ -22,6 +22,8 @@ class UserAccount(db.Model, UserMixin):
     catechist_id = Column(
         UUID(as_uuid=True), ForeignKey("catechists.id", ondelete="set null", onupdate="cascade"), nullable=True
     )
+    # relationship
+    catechist = db.relationship("Catechist", backref="user_account")
 
     # pubic functions
     @classmethod
@@ -31,3 +33,9 @@ class UserAccount(db.Model, UserMixin):
     @classmethod
     def find_by_id(cls, id) -> "UserAccount":
         return cls.query.filter_by(id=id).first()
+    
+    def to_dict(self):
+        return dict(
+            login_id = self.login_id,
+            catechist = self.catechist.to_dict() if self.catechist is not None else None
+        )

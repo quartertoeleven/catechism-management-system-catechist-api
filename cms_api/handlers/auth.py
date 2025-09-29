@@ -1,6 +1,6 @@
 from datetime import timedelta
 from werkzeug.security import check_password_hash
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 from ..models.user_account import UserAccount
 from ..models.base import db, OperationResult
@@ -28,6 +28,8 @@ def logout():
     logout_user()
     return OperationResult(True, "Logout success")
 
+def get_auth_state():
+    return OperationResult(True, "User profile found", current_user.to_dict())
     
 
     
