@@ -9,8 +9,9 @@ user_account_cli_bp = Blueprint('user_account_cli_bp', __name__)
 
 @user_account_cli_bp.cli.command('create')
 @click.argument('login_id')
-def create(login_id):
-    result = create_user_account(login_id)
+@click.argument('password', required=False)
+def create(login_id, password=None):
+    result = create_user_account(login_id, password)
     if result.success:
         db.session.commit()
         click.echo(result.message)

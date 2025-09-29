@@ -27,3 +27,7 @@ class UserAccount(db.Model, UserMixin):
     @classmethod
     def find_by_login_id(cls, login_id) -> "UserAccount":
         return cls.query.filter_by(login_id=login_id).first()
+    
+    @classmethod
+    def find_by_id(cls, id) -> "UserAccount":
+        return cls.query.filter_by(id=id).first()
