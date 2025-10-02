@@ -11,7 +11,7 @@ class LoginAPI(MethodView):
     def post(self):
         login_body_request = request.get_json()
         result = login(login_body_request)
-        return result.to_json_response()
+        return result.to_json_response(failed_status_code=401)
 
 
 class LogoutAPI(MethodView):

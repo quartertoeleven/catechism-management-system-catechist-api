@@ -29,7 +29,7 @@ class Grade(db.Model):
     )
 
     # relationship
-    units = db.relationship("Unit", backref="grade", order_by="Unit.code")
+    # units = db.relationship("Unit", backref="grade", order_by="Unit.code")
     study_year = db.relationship("StudyYear", backref="grades", lazy="subquery")
 
     @classmethod
