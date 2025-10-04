@@ -10,9 +10,14 @@ from ..models.base import OperationResult
 
 def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
     # For a catechist, get the list of units in the same grade as the catechist in a specific study year
-    study_year = StudyYear.get_by_code(study_year_code)
-    if study_year is None:
-        return OperationResult(success=False, message="Study year not found")
+    study_year: StudyYear
+
+    if (study_year_code is None):
+        study_year = StudyYear.get_current()
+    else:
+        study_year = StudyYear.get_by_code(study_year_code)
+        if study_year is None:
+            return OperationResult(success=False, message="Study year not found")
 
     catechist = Catechist.find_by_id(catechist.id)
     if catechist is None:
@@ -20,20 +25,21 @@ def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
 
     # Normally, in a study year, a catechist will only assigned 1 unit only
     # TODO: need to think about the "off-schedule" units later on
-    catechist_current_unit = catechist.units.filter(
-        Unit.grade_id == study_year.grade_id
-    ).first()
-    catechist_current_grade = catechist_current_unit.grade
-    current_grade_units = catechist_current_grade.units
-
     all_unit_dicts = []
 
-    for unit in current_grade_units:
-        unit_dict = unit.to_dict()
-        unit_dict["my_unit"] = (
-            True if unit.code == catechist_current_unit.code else False
-        )
-        all_unit_dicts.append(unit_dict)
+    if (len(catechist.units) > 0):
+        catechist_current_unit = list(filter(
+            lambda unit: unit.grade.study_year_id == study_year.id, catechist.units
+        ))[0]
+        catechist_current_grade = catechist_current_unit.grade
+        current_grade_units = catechist_current_grade.units
+
+        for unit in current_grade_units:
+            unit_dict = unit.to_dict()
+            unit_dict["my_unit"] = (
+                True if unit.code == catechist_current_unit.code else False
+            )
+            all_unit_dicts.append(unit_dict)
 
     return OperationResult(success=True, message="Unit list found", data=all_unit_dicts)
 

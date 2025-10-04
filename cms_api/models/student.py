@@ -34,5 +34,5 @@ class Student(db.Model):
             last_name=self.last_name,
             middle_name=self.middle_name,
             first_name=self.first_name,
-            gender=self.gender,
+            gender=self.gender.value,
         )

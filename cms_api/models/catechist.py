@@ -32,10 +32,10 @@ class Catechist(db.Model):
 
     def to_dict(self):
         return dict(
-            title=self.title,
+            title=self.title.value,
             saint_name=self.saint_name,
             last_name=self.last_name,
             middle_name=self.middle_name,
             first_name=self.first_name,
-            gender=self.gender,
+            gender=self.gender.value,
         )
