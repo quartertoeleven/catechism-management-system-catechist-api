@@ -28,4 +28,4 @@ class Unit(db.Model):
         return cls.query.filter_by(code=unit_code).first()
 
     def to_dict(self):
-        return dict(code=self.code, name=self.name)
+        return dict(code=self.code, name=self.name, grade_code=self.grade.code)

@@ -32,12 +32,12 @@ class GradeSchedule(db.Model):
 
     @classmethod
     def get_schedules_for_grade(cls, grade: Grade):
-        return cls.query.filter_by(grade_id=grade.id).order_by(cls.date.desc).all()
+        return cls.query.filter_by(grade_id=grade.id).order_by(cls.date.desc()).all()
 
     def to_dict(self):
         return dict(
             id=self.id,
-            semester=self.semester,
+            semester=self.semester.value,
             date=self.date,
             mass_content=self.mass_content,
             is_mass_attendance_check=self.is_mass_attendance_check,
