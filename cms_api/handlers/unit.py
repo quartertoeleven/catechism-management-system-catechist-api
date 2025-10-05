@@ -1,4 +1,4 @@
-from ..models import Unit, Catechist, StudyYear
+from ..models import Unit, Catechist, StudyYear, GradeSchedule
 from ..models.base import OperationResult
 
 # def _get_unit_students(unit: Unit):
@@ -56,3 +56,16 @@ def get_unit_details(unit_code, include_students=False):
         unit_dict["students"] = [student.to_dict() for student in unit.students]
 
     return OperationResult(success=True, message="Unit found", data=unit_dict)
+
+def get_unit_schedule(unit_code):
+    unit = Unit.find_by_code(unit_code)
+
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    all_schedules = GradeSchedule.get_schedules_for_grade(unit.grade)
+    all_schedules_as_dict = [schedule.to_dict() for schedule in all_schedules]
+
+    return OperationResult(
+        success=True, message="Unit schedule found", data=all_schedules_as_dict
+    )
