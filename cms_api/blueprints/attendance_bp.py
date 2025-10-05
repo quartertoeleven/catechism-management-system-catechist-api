@@ -7,14 +7,14 @@ attendance_bp = Blueprint("attendance_bp", __name__)
 
 
 class AttendanceCheckAPI(MethodView):
-    def post(self, schedule_id):
+    def post(self, grade_schedule_id):
         request_body = request.get_json()
-        result = handle_attendance_check(schedule_id, request_body)
+        result = handle_attendance_check(grade_schedule_id, request_body)
         return result.to_json_response()
 
 
 attendance_bp.add_url_rule(
-    "/attendances/<int:schedule_id>/check",
+    "/attendances/<int:grade_schedule_id>/check",
     view_func=AttendanceCheckAPI.as_view("attendance_check_endpoint"),
     methods=["POST"],
 )

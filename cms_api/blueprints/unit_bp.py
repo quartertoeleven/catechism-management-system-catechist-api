@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask.views import MethodView
 from flask_login import login_required, current_user
 
-from ..handlers.unit import get_unit_details, get_unit_list_for_a_catechist, get_unit_attendances_for_schedule
+from ..handlers.unit import get_unit_details, get_unit_list_for_a_catechist, get_unit_schedule, get_unit_attendances_for_schedule
 
 unit_bp = Blueprint("unit_bp", __name__)
 
@@ -23,7 +23,12 @@ class UnitAPI(MethodView):
     
 class UnitScheduleAPI(MethodView):
     def get(self, unit_code):
-        schedule_id = request.args.get("schedule_id")
+        result = get_unit_schedule(unit_code)
+        return result.to_json_response()
+    
+class UnitAttendancesAPI(MethodView):
+    def get(self, unit_code):
+        schedule_id = int(request.args.get("schedule_id")) or None
         type = request.args.get("type")
         result = get_unit_attendances_for_schedule(unit_code, schedule_id, type)
         return result.to_json_response()
@@ -42,5 +47,11 @@ unit_bp.add_url_rule(
 unit_bp.add_url_rule(
     "/units/<string:unit_code>/schedules",
     view_func=UnitScheduleAPI.as_view("unit_schedule_api_endpoint"),
+    methods=["GET"],
+)
+
+unit_bp.add_url_rule(
+    "/units/<string:unit_code>/attendances",
+    view_func=UnitAttendancesAPI.as_view("unit_attendances_api_endpoint"),
     methods=["GET"],
 )

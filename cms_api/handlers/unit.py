@@ -1,5 +1,5 @@
 from ..models import Unit, Catechist, StudyYear, GradeSchedule, StudentAttendance
-from ..models.base import OperationResult
+from ..models.base import OperationResult, db
 from ..helpers.enums import AttendanceTypeEnum
 
 # def _get_unit_students(unit: Unit):
@@ -71,7 +71,7 @@ def get_unit_schedule(unit_code):
         success=True, message="Unit schedule found", data=all_schedules_as_dict
     )
 
-def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: str, type: str):
+def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: int, type: str):
     attendance_type = AttendanceTypeEnum(type)
     if attendance_type is None:
         return OperationResult(success=False, message="Attendance type not found")
@@ -103,7 +103,10 @@ def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: str, ty
             None,
         )
         if existing_attendance_entry is None:
-            pass
+            default_attendance_entry = StudentAttendance.create_default(
+                grade_schedule, student, attendance_type
+            )
+            result.append(default_attendance_entry.to_dict())
         else:
             result.append(existing_attendance_entry.to_dict())
 

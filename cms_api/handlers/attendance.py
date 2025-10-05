@@ -4,18 +4,6 @@ from ..models import Student, StudentAttendance, GradeSchedule
 from ..models.base import db, OperationResult
 
 
-def __create_new_student_attendance_with_default_values(
-    grade_schedule: GradeSchedule, student: Student, type: AttendanceTypeEnum
-):
-    return StudentAttendance(
-        student_id=student.id,
-        grade_schedule_id=grade_schedule.id,
-        type=type,
-        status=AttendanceStatusEnum.ABSENT,
-        is_notified_absence=False,
-    )
-
-
 def __create_or_update_student_attendance(
     grade_schedule: GradeSchedule,
     student: Student,
@@ -30,7 +18,7 @@ def __create_or_update_student_attendance(
     )
 
     if attendance_entry is None:
-        attendance_entry = __create_new_student_attendance_with_default_values(
+        attendance_entry = StudentAttendance.create_default(
             grade_schedule, student, attendance_type
         )
 
@@ -65,5 +53,7 @@ def handle_attendance_check(
     __create_or_update_student_attendance(
         grade_schedule, student, type_enum, status_enum, is_notified_absence
     )
+
+    db.session.commit()
 
     return OperationResult(success=True, message="Attendance checked done")

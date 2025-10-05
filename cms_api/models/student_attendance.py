@@ -45,6 +45,9 @@ class StudentAttendance(db.Model):
     )
     check_time = Column(DateTime)
 
+    # relationship
+    student = db.relationship("Student", order_by="Student.first_name")
+
     @classmethod
     def find_by_grade_schedule_id_and_student_id(cls, grade_schedule_id, student_id):
         return cls.query.filter_by(
@@ -67,6 +70,19 @@ class StudentAttendance(db.Model):
             grade_schedule_id=grade_schedule.id, type=type
         ).filter(cls.student_id.in_(student_ids)).all()
     
+    @classmethod
+    def create_default(
+        cls, grade_schedule: GradeSchedule, student: Student, type: AttendanceTypeEnum
+    ) -> "StudentAttendance":
+        return cls(
+            student_id=student.id,
+            grade_schedule_id=grade_schedule.id,
+            type=type,
+            status=AttendanceStatusEnum.ABSENT,
+            is_notified_absence=False,
+            student = student
+        )
+
     def to_dict(self):
         return dict(
             student_id=self.student_id,
@@ -75,5 +91,6 @@ class StudentAttendance(db.Model):
             status=self.status.value,
             is_notified_absence=self.is_notified_absence,
             note=self.note,
-            check_time=self.check_time
+            check_time=self.check_time,
+            student = self.student.to_dict(),
         )
