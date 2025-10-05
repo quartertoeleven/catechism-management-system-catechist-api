@@ -1,5 +1,6 @@
-from ..models import Unit, Catechist, StudyYear, GradeSchedule
+from ..models import Unit, Catechist, StudyYear, GradeSchedule, StudentAttendance
 from ..models.base import OperationResult
+from ..helpers.enums import AttendanceTypeEnum
 
 # def _get_unit_students(unit: Unit):
 #     unit_students = unit.students
@@ -68,4 +69,44 @@ def get_unit_schedule(unit_code):
 
     return OperationResult(
         success=True, message="Unit schedule found", data=all_schedules_as_dict
+    )
+
+def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: str, type: str):
+    attendance_type = AttendanceTypeEnum(type)
+    if attendance_type is None:
+        return OperationResult(success=False, message="Attendance type not found")
+    
+    unit = Unit.find_by_code(unit_code)
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    grade_schedule = GradeSchedule.find_by_id(grade_schedule_id)
+    if grade_schedule is None:
+        return OperationResult(success=False, message="Grade schedule not found")
+
+    unit_students = unit.students
+    unit_student_ids = [unit_student.id for unit_student in unit_students]
+
+    student_attendance_list = StudentAttendance.find_by_grade_schedule_and_type_and_student_ids(
+        grade_schedule, attendance_type, unit_student_ids
+    )
+
+    result = []
+
+    for student in unit_students:
+        existing_attendance_entry = next(
+            (
+                student_attendance
+                for student_attendance in student_attendance_list
+                if student_attendance.student_id == student.id
+            ),
+            None,
+        )
+        if existing_attendance_entry is None:
+            pass
+        else:
+            result.append(existing_attendance_entry.to_dict())
+
+    return OperationResult(
+        success=True, message="Unit attendances found", data=result
     )

@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask.views import MethodView
 from flask_login import login_required, current_user
 
-from ..handlers.unit import get_unit_details, get_unit_list_for_a_catechist, get_unit_schedule
+from ..handlers.unit import get_unit_details, get_unit_list_for_a_catechist, get_unit_attendances_for_schedule
 
 unit_bp = Blueprint("unit_bp", __name__)
 
@@ -23,7 +23,9 @@ class UnitAPI(MethodView):
     
 class UnitScheduleAPI(MethodView):
     def get(self, unit_code):
-        result = get_unit_schedule(unit_code)
+        schedule_id = request.args.get("schedule_id")
+        type = request.args.get("type")
+        result = get_unit_attendances_for_schedule(unit_code, schedule_id, type)
         return result.to_json_response()
 
 
