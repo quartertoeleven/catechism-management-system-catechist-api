@@ -7,7 +7,6 @@ from ...models.base import db
 
 user_account_cli_bp = Blueprint("user_account_cli_bp", __name__)
 
-
 @user_account_cli_bp.cli.command("create")
 @click.argument("login_id")
 @click.argument("password", required=False)

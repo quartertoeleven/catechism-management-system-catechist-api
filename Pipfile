@@ -14,6 +14,8 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 alembic-postgresql-enum = "*"
 flask-login = "*"
+pandas = "*"
+openpyxl = "*"
 
 [dev-packages]
 black = "*"
