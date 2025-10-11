@@ -4,6 +4,6 @@ WORKDIR /app
 
 ADD . /app
 
-RUN pip install pipenv && pipenv install --system
+RUN pip install pipenv && pipenv install --system && chmod +x start.sh
 
 CMD ["./start.sh"]

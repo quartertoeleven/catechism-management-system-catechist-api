@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, String, Enum
+from sqlalchemy import Column, String, Enum, Date
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import db
@@ -22,6 +22,7 @@ class Student(db.Model):
     middle_name = Column(String(30))
     first_name = Column(String(30), nullable=False)
     gender = Column(Enum(GenderEnum), nullable=False)
+    date_of_birth = Column(Date)
 
     @classmethod
     def find_by_code(cls, code) -> "Student":
@@ -35,4 +36,5 @@ class Student(db.Model):
             middle_name=self.middle_name,
             first_name=self.first_name,
             gender=self.gender.value,
+            date_of_birth=self.date_of_birth,
         )
