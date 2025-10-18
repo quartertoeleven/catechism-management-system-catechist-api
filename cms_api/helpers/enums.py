@@ -22,6 +22,7 @@ class SemesterEnum(enum.Enum):
 class AttendanceStatusEnum(enum.Enum):
     PRESENT = "present"
     ABSENT = "absent"
+    LEAVE = "leave"
 
 
 class AttendanceTypeEnum(enum.Enum):
