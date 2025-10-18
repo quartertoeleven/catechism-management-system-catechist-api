@@ -12,6 +12,9 @@ def __get_middle_name(first_name_from_excel):
 def __get_gender(gender_from_excel):
     return GenderEnum.MALE if gender_from_excel == "Nam" else GenderEnum.FEMALE
 
+def __get_date_of_birth(date_of_birth_from_excel):
+    return datetime.strptime(date_of_birth_from_excel, "%d/%m/%Y").date() if date_of_birth_from_excel else None
+
 def import_unit_students_from_excel(excel_file):
     xl = ExcelFile(excel_file)
     wb = xl.book
@@ -32,6 +35,7 @@ def import_unit_students_from_excel(excel_file):
     student_dict_from_excel = student_df.to_dict(orient="records")
     student_list = []
     for student_dict in student_dict_from_excel:
+        print(student_dict)
         new_student = Student(
             code=student_dict["Mã học viên"],
             saint_name=student_dict["Tên Thánh"],
@@ -39,7 +43,7 @@ def import_unit_students_from_excel(excel_file):
             middle_name=__get_middle_name(student_dict["Họ"]),
             first_name=student_dict["Tên"],
             gender=__get_gender(student_dict["Giới tính"]),
-            date_of_birth=student_dict["Ngày Sinh"],
+            date_of_birth=__get_date_of_birth(student_dict.get("Ngày Sinh").strip()) if student_dict.get("Ngày Sinh") else None,
         )
         student_list.append(new_student)
     
