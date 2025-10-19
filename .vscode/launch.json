@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "cms_api/__init__.py",
+                "FLASK_APP": "cms_api/catechism_app_api.py",
                 "FLASK_DEBUG": "1"
             },
             "args": [
