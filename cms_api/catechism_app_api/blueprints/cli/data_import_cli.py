@@ -1,7 +1,7 @@
 import click
 from flask import Blueprint
 
-from ...models.base import db
+from cms_api.models.base import db
 from ...handlers.data_import import import_unit_students_from_excel
 
 data_import_cli_bp = Blueprint("data_import_cli_bp", __name__)

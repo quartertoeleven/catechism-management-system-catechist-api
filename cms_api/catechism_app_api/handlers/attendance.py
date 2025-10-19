@@ -1,7 +1,7 @@
-from ..helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
+from ...helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
 
-from ..models import Student, StudentAttendance, GradeSchedule
-from ..models.base import db, OperationResult
+from ...models import Student, StudentAttendance, GradeSchedule
+from ...models.base import db, OperationResult
 
 
 def __create_or_update_student_attendance(

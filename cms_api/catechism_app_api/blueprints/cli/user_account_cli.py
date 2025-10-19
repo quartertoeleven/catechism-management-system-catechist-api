@@ -3,7 +3,7 @@ import click
 from flask import Blueprint
 
 from ...handlers.user_account import create_user_account, reset_account_password
-from ...models.base import db
+from ....models.base import db
 
 user_account_cli_bp = Blueprint("user_account_cli_bp", __name__)
 

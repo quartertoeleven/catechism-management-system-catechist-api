@@ -2,8 +2,8 @@ from datetime import timedelta
 from werkzeug.security import check_password_hash
 from flask_login import login_user, logout_user, current_user
 
-from ..models.user_account import UserAccount
-from ..models.base import db, OperationResult
+from ...models.user_account import UserAccount
+from ...models.base import db, OperationResult
 
 
 def login(login_request_dict):

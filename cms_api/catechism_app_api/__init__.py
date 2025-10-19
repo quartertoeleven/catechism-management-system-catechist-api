@@ -1,9 +1,13 @@
 import os
 
 from flask import Flask
+from flask_cors import CORS
 from dotenv import load_dotenv
 
-from .models.base import db, migrate
+from cms_api.models.base import db
+from .blueprints import register_blueprints
+from cms_api.helpers.auth_helpers import login_manager
+
 
 def create_app(test_config=None):
     load_dotenv()
@@ -13,6 +17,9 @@ def create_app(test_config=None):
 
     app.config.from_mapping(
         SQLALCHEMY_DATABASE_URI=os.environ.get("SQLALCHEMY_DATABASE_URI"),
+        SESSION_COOKIE_DOMAIN=os.getenv("SESSION_COOKIE_DOMAIN"),
+        SESSION_COOKIE_SAME_SITE="Lax",
+        SECRET_KEY=os.getenv("SECRET_KEY"),
     )
 
     if test_config is None:
@@ -28,7 +35,12 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    CORS(app, supports_credentials=True, origins=(os.getenv("CORS_ORIGINS") if os.getenv("CORS_ORIGINS") else "").split(","))
+
     db.init_app(app)
-    migrate.init_app(app, db)
+
+    login_manager.init_app(app)
+
+    register_blueprints(app, "/api")
 
     return app

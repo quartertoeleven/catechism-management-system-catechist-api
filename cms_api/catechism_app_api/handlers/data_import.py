@@ -1,10 +1,10 @@
 from datetime import datetime
 from pandas import read_excel, isna, NA, ExcelFile
 
-from ..models import Unit, Student, UnitStudent
-from ..models.base import OperationResult, db
+from ...models import Unit, Student, UnitStudent
+from ...models.base import OperationResult, db
 
-from ..helpers.enums import GenderEnum
+from ...helpers.enums import GenderEnum
 
 def __get_middle_name(first_name_from_excel):
     return ' '.join(first_name_from_excel.split(' ')[1:]) if first_name_from_excel else None
