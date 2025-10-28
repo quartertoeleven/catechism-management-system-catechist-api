@@ -67,8 +67,13 @@ def get_unit_schedule(unit_code):
     all_schedules = GradeSchedule.get_schedules_for_grade(unit.grade)
     all_schedules_as_dict = [schedule.to_dict() for schedule in all_schedules]
 
+    result = dict(
+        schedules=all_schedules_as_dict,
+        unit_info=unit.to_dict()
+    )
+
     return OperationResult(
-        success=True, message="Unit schedule found", data=all_schedules_as_dict
+        success=True, message="Unit schedule found", data=result
     )
 
 def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: int, type: str):

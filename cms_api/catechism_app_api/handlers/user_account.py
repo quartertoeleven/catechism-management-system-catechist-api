@@ -1,11 +1,13 @@
 import re, string, random
 
 from werkzeug.security import generate_password_hash
+from flask_login import current_user
 
 from ...helpers.constants import VALID_EMAIL_REGEX
 
-from ...models import UserAccount
+from ...models import UserAccount, StudyYear
 from ...models.base import db, OperationResult
+
 
 
 def __generate_strong_password(length=16):
@@ -66,3 +68,26 @@ def reset_account_password(login_id):
         "Password reset successfully for {login_id}".format(login_id=login_id),
         dict(password=new_password),
     )
+
+def get_current_user_profile():
+    result = current_user.to_dict()
+    
+    current_unit = None
+
+    if current_user.catechist is not None:
+        current_catechist = current_user.catechist
+        current_study_year = StudyYear.get_current()
+        all_catechist_units = current_catechist.units
+
+        if len(all_catechist_units) > 0:
+            current_unit = list(filter(
+                lambda unit: unit.grade.study_year_id == current_study_year.id, all_catechist_units
+            ))
+
+        current_unit = current_unit[0].to_dict() if len(current_unit) > 0 else None
+    
+    result["current_unit"] = current_unit
+
+    return OperationResult(True, "User profile found", result)
+
+    

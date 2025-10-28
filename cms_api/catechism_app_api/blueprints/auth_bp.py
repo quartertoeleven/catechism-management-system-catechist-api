@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_login import login_required
 
 from ..handlers.auth import login, logout, get_auth_state
+from ..handlers.user_account import get_current_user_profile
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -26,7 +27,7 @@ class LoginStateAPI(MethodView):
     decorators = [login_required]
 
     def get(self):
-        current_login_user_result = get_auth_state()
+        current_login_user_result = get_current_user_profile()
         return current_login_user_result.to_json_response()
 
 
