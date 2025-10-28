@@ -7,7 +7,7 @@ login_manager = LoginManager()
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id) -> UserAccount:
     return UserAccount.find_by_id(user_id)
 
 
