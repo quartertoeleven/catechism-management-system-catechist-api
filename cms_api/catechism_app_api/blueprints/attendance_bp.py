@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask.views import MethodView
+from flask_login import login_required
 
 from ..handlers.attendance import handle_attendance_check
 
@@ -7,6 +8,8 @@ attendance_bp = Blueprint("attendance_bp", __name__)
 
 
 class AttendanceCheckAPI(MethodView):
+    decorators = [login_required]
+    
     def post(self, grade_schedule_id):
         request_body = request.get_json()
         result = handle_attendance_check(grade_schedule_id, request_body)
