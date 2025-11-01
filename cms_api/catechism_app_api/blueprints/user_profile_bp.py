@@ -20,6 +20,6 @@ class ChangePasswordAPI(MethodView):
     
 user_profile_bp.add_url_rule(
     "/account/change-password",
-    view_func=ChangePasswordAPI.as_view("change_password_api"),
+    view_func=ChangePasswordAPI.as_view("change_password_endpoint"),
     methods=["POST"],
 )
