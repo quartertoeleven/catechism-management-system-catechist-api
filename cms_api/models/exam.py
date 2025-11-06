@@ -26,7 +26,7 @@ class Exam(db.Model):
             id=self.id,
             name=self.name,
             factor=self.factor,
-            semester=self.semester,
+            semester=self.semester.value,
             grade_id=self.grade_id
         )
 

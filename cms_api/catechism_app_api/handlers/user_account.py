@@ -71,7 +71,8 @@ def reset_account_password(login_id):
 def get_current_user_profile():
     result = current_user.to_dict()
     
-    current_unit = None
+    current_unit_dict = None
+    current_grade_dict = None
 
     if current_user.catechist is not None:
         current_catechist = current_user.catechist
@@ -83,9 +84,12 @@ def get_current_user_profile():
                 lambda unit: unit.grade.study_year_id == current_study_year.id, all_catechist_units
             ))
 
-        current_unit = current_unit[0].to_dict() if len(current_unit) > 0 else None
+        current_unit_dict = current_unit[0].to_dict() if len(current_unit) > 0 else None
+        current_grade_dict = current_unit[0].grade.to_dict()
+
     
-    result["current_unit"] = current_unit
+    result["current_unit"] = current_unit_dict
+    result["current_grade"] = current_grade_dict
 
     return OperationResult(True, "User profile found", result)
 

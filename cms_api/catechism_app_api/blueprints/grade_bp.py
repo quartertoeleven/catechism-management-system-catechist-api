@@ -30,3 +30,9 @@ grade_bp.add_url_rule(
     view_func=GradeSchedulesAPI.as_view("grade_schedules_endpoint"),
     methods=["GET"],
 )
+
+grade_bp.add_url_rule(
+    "/grades/<string:grade_code>/exams",
+    view_func=GradeExamsAPI.as_view("grade_exams_endpoint"),
+    methods=["GET"],
+)

@@ -33,10 +33,15 @@ def get_grade_exams(grade_code):
 
     if grade is None:
         return OperationResult(success=False, message="Grade not found")
+    
+    result = dict(
+        grade_details=grade.to_dict(),
+        exams=[]
+    )
 
-    all_exams = grade.exams.order_by(Exam.semester)
-    all_exams_as_dict = [test.to_dict() for test in all_exams]
+    all_exams = grade.exams
+    result["exams"] = [test.to_dict() for test in all_exams]
 
     return OperationResult(
-        success=True, message="Grade exams found", data=all_exams_as_dict
+        success=True, message="Grade exams found", data=result
     )
