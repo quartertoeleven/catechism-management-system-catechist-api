@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Enum
 from .base import db
 from ..helpers.enums import SemesterEnum
 
+
 class Exam(db.Model):
     __tablename__ = "exams"
 
@@ -13,12 +14,15 @@ class Exam(db.Model):
     grade_id = Column(
         ForeignKey("grades.id", ondelete="cascade", onupdate="cascade"), nullable=False
     )
-    
+
     # relationship
     grade = db.relationship("Grade", backref="exams")
+    exam_scores = db.relationship(
+        "ExamScore", backref="exam", cascade="all, delete-orphan"
+    )
 
     @classmethod
-    def find_by_id(cls, id) -> 'Exam':
+    def find_by_id(cls, id) -> "Exam":
         return cls.query.get(id)
 
     def to_dict(self):
@@ -27,10 +31,5 @@ class Exam(db.Model):
             name=self.name,
             factor=self.factor,
             semester=self.semester.value,
-            grade_id=self.grade_id
+            grade_id=self.grade_id,
         )
-
-
-
-
-    

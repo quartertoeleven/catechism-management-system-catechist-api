@@ -1,4 +1,13 @@
-from ...models import Unit, Catechist, StudyYear, GradeSchedule, StudentAttendance
+from ...models import (
+    Unit,
+    Catechist,
+    StudyYear,
+    GradeSchedule,
+    Student,
+    StudentAttendance,
+    Exam,
+    ExamScore,
+)
 from ...models.base import OperationResult, db
 from ...helpers.enums import AttendanceTypeEnum
 
@@ -13,7 +22,7 @@ def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
     # For a catechist, get the list of units in the same grade as the catechist in a specific study year
     study_year: StudyYear
 
-    if (study_year_code is None):
+    if study_year_code is None:
         study_year = StudyYear.get_current()
     else:
         study_year = StudyYear.get_by_code(study_year_code)
@@ -28,10 +37,12 @@ def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
     # TODO: need to think about the "off-schedule" units later on
     all_unit_dicts = []
 
-    if (len(catechist.units) > 0):
-        catechist_current_unit = list(filter(
-            lambda unit: unit.grade.study_year_id == study_year.id, catechist.units
-        ))[0]
+    if len(catechist.units) > 0:
+        catechist_current_unit = list(
+            filter(
+                lambda unit: unit.grade.study_year_id == study_year.id, catechist.units
+            )
+        )[0]
         catechist_current_grade = catechist_current_unit.grade
         current_grade_units = catechist_current_grade.units
 
@@ -58,6 +69,7 @@ def get_unit_details(unit_code, include_students=False):
 
     return OperationResult(success=True, message="Unit found", data=unit_dict)
 
+
 def get_unit_schedule(unit_code):
     unit = Unit.find_by_code(unit_code)
 
@@ -67,20 +79,18 @@ def get_unit_schedule(unit_code):
     all_schedules = GradeSchedule.get_schedules_for_grade(unit.grade)
     all_schedules_as_dict = [schedule.to_dict() for schedule in all_schedules]
 
-    result = dict(
-        schedules=all_schedules_as_dict,
-        unit_info=unit.to_dict()
-    )
+    result = dict(schedules=all_schedules_as_dict, unit_info=unit.to_dict())
 
-    return OperationResult(
-        success=True, message="Unit schedule found", data=result
-    )
+    return OperationResult(success=True, message="Unit schedule found", data=result)
 
-def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: int, type: str):
+
+def get_unit_attendances_for_schedule(
+    unit_code: str, grade_schedule_id: int, type: str
+):
     attendance_type = AttendanceTypeEnum(type)
     if attendance_type is None:
         return OperationResult(success=False, message="Attendance type not found")
-    
+
     unit = Unit.find_by_code(unit_code)
     if unit is None:
         return OperationResult(success=False, message="Unit not found")
@@ -92,8 +102,10 @@ def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: int, ty
     unit_students = unit.students
     unit_student_ids = [unit_student.id for unit_student in unit_students]
 
-    student_attendance_list = StudentAttendance.find_by_grade_schedule_and_type_and_student_ids(
-        grade_schedule, attendance_type, unit_student_ids
+    student_attendance_list = (
+        StudentAttendance.find_by_grade_schedule_and_type_and_student_ids(
+            grade_schedule, attendance_type, unit_student_ids
+        )
     )
 
     result = []
@@ -115,6 +127,85 @@ def get_unit_attendances_for_schedule(unit_code: str, grade_schedule_id: int, ty
         else:
             result.append(existing_attendance_entry.to_dict())
 
-    return OperationResult(
-        success=True, message="Unit attendances found", data=result
+    return OperationResult(success=True, message="Unit attendances found", data=result)
+
+
+def __generate_student_exam_score_data(
+    student: Student, exam: Exam, exam_score_list: list[ExamScore]
+):
+    exam_score_record = next(
+        (record for record in exam_score_list if record.student_id == student.id), None
     )
+    if exam_score_record:
+        return exam_score_record
+    else:
+        return ExamScore.create_default(exam, student)
+
+
+def get_unit_exam_scores(unit_code, exam_id):
+    unit = Unit.find_by_code(unit_code)
+
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    exam = Exam.find_by_id(exam_id)
+
+    if exam is None:
+        return OperationResult(success=False, message="Exam not found")
+
+    if unit.grade.code != exam.grade.code:
+        return OperationResult(
+            success=False, message="Unit and exam are not in the same grade"
+        )
+
+    all_students = unit.students
+    exam_score_list = ExamScore.query.filter(
+        ExamScore.exam_id == exam.id,
+        ExamScore.student_id.in_([student.id for student in all_students]),
+    ).all()
+
+    result_exam_score_list = []
+    for student in all_students:
+        exam_score_entry = __generate_student_exam_score_data(
+            student, exam, exam_score_list
+        )
+        result_exam_score_list.append(exam_score_entry.to_dict())
+
+    return OperationResult(
+        success=True, message="Unit exam scores found", data=result_exam_score_list
+    )
+
+
+def update_student_exam_score_in_a_unit(unit_code, exam_id, student_code, score):
+    unit = Unit.find_by_code(unit_code)
+
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    exam = Exam.find_by_id(exam_id)
+
+    if exam is None:
+        return OperationResult(success=False, message="Exam not found")
+
+    if unit.grade.code != exam.grade.code:
+        return OperationResult(
+            success=False, message="Unit and exam are not in the same grade"
+        )
+
+    student = Student.find_by_code(student_code)
+
+    if student is None:
+        return OperationResult(success=False, message="Student not found")
+
+    examScore = ExamScore.find_by_student_and_exam(student, exam)
+
+    if examScore is None:
+        newExamScoreEntry = ExamScore.create_default(exam, student)
+        newExamScoreEntry.score = score
+        db.session.add(newExamScoreEntry)
+
+    examScore.score = score
+
+    db.session.flush()
+
+    return OperationResult(success=True, message="Exam score updated")

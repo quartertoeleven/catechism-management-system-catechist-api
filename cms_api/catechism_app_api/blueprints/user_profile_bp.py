@@ -7,6 +7,7 @@ from ..handlers.user_account import change_account_password
 
 user_profile_bp = Blueprint("user_profile_bp", __name__)
 
+
 class ChangePasswordAPI(MethodView):
     decorators = [login_required]
 
@@ -20,7 +21,8 @@ class ChangePasswordAPI(MethodView):
         if result.success:
             db.session.commit()
         return result.to_json_response()
-    
+
+
 user_profile_bp.add_url_rule(
     "/account/change-password",
     view_func=ChangePasswordAPI.as_view("change_password_endpoint"),

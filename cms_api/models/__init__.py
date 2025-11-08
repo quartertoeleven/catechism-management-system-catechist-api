@@ -15,3 +15,5 @@ from .grade_schedule import GradeSchedule
 from .student_attendance import StudentAttendance
 
 from .exam import Exam
+from .exam_score import ExamScore
+
