@@ -34,3 +34,13 @@ def create_or_update_exam(exam_dict):
     db.session.flush()
 
     return OperationResult(success=True, message="Exam created", data=new_exam.to_dict())
+
+def remove_exam(exam_id):
+    existing_exam = Exam.find_by_id(exam_id)
+    if existing_exam is None:
+        return OperationResult(success=False, message="Exam not found")
+
+    db.session.delete(existing_exam)
+    db.session.flush()
+
+    return OperationResult(success=True, message="Exam deleted")
