@@ -28,6 +28,24 @@ class Student(db.Model):
     def find_by_code(cls, code) -> "Student":
         return cls.query.filter_by(code=code).first()
 
+    @property
+    def full_name(self):
+        full_name_arr = [self.last_name, self.middle_name, self.first_name]
+        return " ".join(
+            filter(
+                lambda name_seg: name_seg is not None and name_seg.strip() != "",
+                full_name_arr,
+            )
+        )
+
+    @property
+    def v1_qr_code_str(self):
+        church_name = "Tam Hà"
+        student_code = self.code
+        full_name = self.full_name
+        gender = "Nam" if self.gender == GenderEnum.MALE else "Nữ"
+        return f"{church_name}|{student_code}|{full_name}|{gender}"
+
     def to_dict(self):
         return dict(
             code=self.code,
