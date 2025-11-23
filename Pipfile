@@ -16,6 +16,8 @@ alembic-postgresql-enum = "*"
 flask-login = "*"
 pandas = "*"
 openpyxl = "*"
+segno = "*"
+imgkit = "*"
 
 [dev-packages]
 black = "*"

@@ -1,4 +1,5 @@
-from ...helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
+from cms_api.helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
+from cms_api.helpers.qr_helpers import get_student_code_from_qr
 
 from ...models import Student, StudentAttendance, GradeSchedule
 from ...models.base import db, OperationResult
@@ -54,6 +55,32 @@ def handle_attendance_check(
         grade_schedule, student, type_enum, status_enum, is_notified_absence
     )
 
-    db.session.commit()
+    result_dict = dict(
+        student=dict(
+            code=student.code,
+            fullname=student.full_name,
+            saint_name=student.saint_name,
+        )
+    )
 
-    return OperationResult(success=True, message="Attendance checked done")
+    return OperationResult(
+        success=True, message="Attendance checked done", data=result_dict
+    )
+
+
+def handle_attendance_check_using_qr(
+    grade_schedule_id, attendance_check_dict_with_qr
+) -> OperationResult:
+    raw_str_from_qr = attendance_check_dict_with_qr.get("qrData")
+    student_code = get_student_code_from_qr(raw_str_from_qr)
+    if student_code is None:
+        return OperationResult(success=False, message="QR data not valid")
+
+    attendance_check_dict = dict(
+        student_code=student_code,
+        type=attendance_check_dict_with_qr.get("type"),
+        status=AttendanceStatusEnum.PRESENT.value,
+        is_notified_absence=None,
+    )
+
+    return handle_attendance_check(grade_schedule_id, attendance_check_dict)
