@@ -130,6 +130,36 @@ def get_unit_attendances_for_schedule(
     return OperationResult(success=True, message="Unit attendances found", data=result)
 
 
+def get_unit_attendances_report(unit_code: str):
+    unit = Unit.find_by_code(unit_code)
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    grade_schedules = GradeSchedule.get_schedules_for_grade(unit.grade)
+    grade_schedules_ids = [grade_schedule.id for grade_schedule in grade_schedules]
+
+    unit_students = unit.students
+    unit_student_ids = [unit_student.id for unit_student in unit_students]
+
+    student_attendance_list = (
+        StudentAttendance.find_by_student_ids_and_grade_schedule_ids(
+            unit_student_ids, grade_schedules_ids
+        )
+    )
+
+    result = []
+
+    for student in unit_students:
+        student_attendance_entry = student.to_dict()
+
+        student_attendance_entry["attendances"] = []
+
+        result.append(student_attendance_entry)
+        # TODO: need to generate the attendances. Start here next time
+
+    return OperationResult(success=True, message="Unit attendances found", data=result)
+
+
 def __generate_student_exam_score_data(
     student: Student, exam: Exam, exam_score_list: list[ExamScore]
 ):

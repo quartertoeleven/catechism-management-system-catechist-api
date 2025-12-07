@@ -1,7 +1,7 @@
 from cms_api.helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
 from cms_api.helpers.qr_helpers import get_student_code_from_qr
 
-from ...models import Student, StudentAttendance, GradeSchedule
+from ...models import Student, StudentAttendance, GradeSchedule, StudyYear, UnitStudent
 from ...models.base import db, OperationResult
 
 

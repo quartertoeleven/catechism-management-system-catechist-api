@@ -61,15 +61,27 @@ class StudentAttendance(db.Model):
         return cls.query.filter_by(
             student_id=student.id, grade_schedule_id=grade_schedule.id, type=type
         ).first()
-    
+
     @classmethod
     def find_by_grade_schedule_and_type_and_student_ids(
         cls, grade_schedule: GradeSchedule, type: AttendanceTypeEnum, student_ids: list
     ):
-        return cls.query.filter_by(
-            grade_schedule_id=grade_schedule.id, type=type
-        ).filter(cls.student_id.in_(student_ids)).all()
-    
+        return (
+            cls.query.filter_by(grade_schedule_id=grade_schedule.id, type=type)
+            .filter(cls.student_id.in_(student_ids))
+            .all()
+        )
+
+    @classmethod
+    def find_by_student_ids_and_grade_schedule_ids(
+        cls, student_ids: list, grade_schedule_ids: list
+    ):
+        return (
+            cls.query.filter(cls.student_id.in_(student_ids))
+            .filter(cls.grade_schedule_id.in_(grade_schedule_ids))
+            .all()
+        )
+
     @classmethod
     def create_default(
         cls, grade_schedule: GradeSchedule, student: Student, type: AttendanceTypeEnum
@@ -80,7 +92,7 @@ class StudentAttendance(db.Model):
             type=type,
             status=AttendanceStatusEnum.ABSENT,
             is_notified_absence=False,
-            student = student
+            student=student,
         )
 
     def to_dict(self):
@@ -92,5 +104,5 @@ class StudentAttendance(db.Model):
             is_notified_absence=self.is_notified_absence,
             note=self.note,
             check_time=self.check_time,
-            student = self.student.to_dict(),
+            student=self.student.to_dict(),
         )
