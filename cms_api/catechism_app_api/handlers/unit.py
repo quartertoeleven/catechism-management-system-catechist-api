@@ -9,7 +9,7 @@ from ...models import (
     ExamScore,
 )
 from ...models.base import OperationResult, db
-from ...helpers.enums import AttendanceTypeEnum
+from ...helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
 
 # def _get_unit_students(unit: Unit):
 #     unit_students = unit.students
@@ -130,7 +130,7 @@ def get_unit_attendances_for_schedule(
     return OperationResult(success=True, message="Unit attendances found", data=result)
 
 
-def get_unit_attendances_report(unit_code: str):
+def get_unit_attendances_statistics(unit_code: str):
     unit = Unit.find_by_code(unit_code)
     if unit is None:
         return OperationResult(success=False, message="Unit not found")
@@ -150,12 +150,58 @@ def get_unit_attendances_report(unit_code: str):
     result = []
 
     for student in unit_students:
-        student_attendance_entry = student.to_dict()
+        student_entry = student.to_dict()
 
-        student_attendance_entry["attendances"] = []
+        student_entry["attendance_data"] = []
 
-        result.append(student_attendance_entry)
-        # TODO: need to generate the attendances. Start here next time
+        student_related_attendance_entries = list(
+            filter(
+                lambda student_attendance: student_attendance.student_id == student.id,
+                student_attendance_list,
+            )
+        )
+
+        for grade_schedule in grade_schedules:
+            attendance_entry = dict(
+                date=grade_schedule.date,
+                mass_status=None,
+                lesson_status=None,
+            )
+
+            if grade_schedule.is_mass_attendance_check:
+                existing_mass_attendance_entry = next(
+                    (
+                        student_attendance
+                        for student_attendance in student_related_attendance_entries
+                        if student_attendance.grade_schedule_id == grade_schedule.id and student.id == student_attendance.student_id and student_attendance.type == AttendanceTypeEnum.MASS
+                    ),
+                    None
+                )
+                if existing_mass_attendance_entry is None:
+                    attendance_entry['mass_status'] = AttendanceStatusEnum.ABSENT.value
+                else:
+                    attendance_entry['mass_status'] = existing_mass_attendance_entry.status.value
+
+            if grade_schedule.is_lesson_attendance_check:
+                existing_lesson_attendance_entry = next(
+                    (
+                        student_attendance
+                        for student_attendance in student_related_attendance_entries
+                        if student_attendance.grade_schedule_id == grade_schedule.id and student.id == student_attendance.student_id and student_attendance.type == AttendanceTypeEnum.LESSON
+                    ),
+                    None
+                )
+                if existing_lesson_attendance_entry is None:
+                    attendance_entry['lesson_status'] = AttendanceStatusEnum.ABSENT.value
+                else:
+                    attendance_entry['lesson_status'] = existing_lesson_attendance_entry.status.value
+
+            
+            student_entry["attendance_data"] = attendance_entry
+            
+
+        result.append(student_entry)
+    
 
     return OperationResult(success=True, message="Unit attendances found", data=result)
 
