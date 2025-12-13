@@ -147,7 +147,9 @@ def get_unit_attendances_statistics(unit_code: str):
         )
     )
 
-    result = []
+    result = unit.to_dict()
+
+    result["students"] = []
 
     for student in unit_students:
         student_entry = student.to_dict()
@@ -173,35 +175,42 @@ def get_unit_attendances_statistics(unit_code: str):
                     (
                         student_attendance
                         for student_attendance in student_related_attendance_entries
-                        if student_attendance.grade_schedule_id == grade_schedule.id and student.id == student_attendance.student_id and student_attendance.type == AttendanceTypeEnum.MASS
+                        if student_attendance.grade_schedule_id == grade_schedule.id
+                        and student.id == student_attendance.student_id
+                        and student_attendance.type == AttendanceTypeEnum.MASS
                     ),
-                    None
+                    None,
                 )
                 if existing_mass_attendance_entry is None:
-                    attendance_entry['mass_status'] = AttendanceStatusEnum.ABSENT.value
+                    attendance_entry["mass_status"] = AttendanceStatusEnum.ABSENT.value
                 else:
-                    attendance_entry['mass_status'] = existing_mass_attendance_entry.status.value
+                    attendance_entry["mass_status"] = (
+                        existing_mass_attendance_entry.status.value
+                    )
 
             if grade_schedule.is_lesson_attendance_check:
                 existing_lesson_attendance_entry = next(
                     (
                         student_attendance
                         for student_attendance in student_related_attendance_entries
-                        if student_attendance.grade_schedule_id == grade_schedule.id and student.id == student_attendance.student_id and student_attendance.type == AttendanceTypeEnum.LESSON
+                        if student_attendance.grade_schedule_id == grade_schedule.id
+                        and student.id == student_attendance.student_id
+                        and student_attendance.type == AttendanceTypeEnum.LESSON
                     ),
-                    None
+                    None,
                 )
                 if existing_lesson_attendance_entry is None:
-                    attendance_entry['lesson_status'] = AttendanceStatusEnum.ABSENT.value
+                    attendance_entry["lesson_status"] = (
+                        AttendanceStatusEnum.ABSENT.value
+                    )
                 else:
-                    attendance_entry['lesson_status'] = existing_lesson_attendance_entry.status.value
+                    attendance_entry["lesson_status"] = (
+                        existing_lesson_attendance_entry.status.value
+                    )
 
-            
-            student_entry["attendance_data"] = attendance_entry
-            
+            student_entry["attendance_data"].append(attendance_entry)
 
-        result.append(student_entry)
-    
+        result["students"].append(student_entry)
 
     return OperationResult(success=True, message="Unit attendances found", data=result)
 
