@@ -41,6 +41,10 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
 
         if current_grade_schedule is None:
             return OperationResult(success=False, message="Grade schedule not found")
+        
+        if current_grade_schedule.grade_id != grade.id:
+            return OperationResult(success=False, message="Cannot edit schedule of other grade")
+
     else:
         current_grade_schedule = GradeSchedule(
             semester = SemesterEnum(schedule_dict.get("semester")) if schedule_dict.get("semester") is not None else None,
@@ -77,6 +81,25 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
 
     return OperationResult(success=True, message="Grade schedule created", data=current_grade_schedule.to_dict())
 
+def delete_grade_schedule(grade_code, schedule_id):
+    grade = Grade.get_by_code(grade_code)
+
+    if grade is None:
+        return OperationResult(success=False, message="Grade not found")
+    
+    existing_grade_schedule = GradeSchedule.find_by_id(schedule_id)
+
+    if existing_grade_schedule is None:
+        return OperationResult(success=False, message="Grade schedule not found")
+
+    if existing_grade_schedule.grade_id != grade.id:
+        return OperationResult(success=False, message="Cannot delete schedule of the other grade")
+    
+    db.session.delete(existing_grade_schedule)
+    db.session.flush()
+
+    return OperationResult(success=True, message="Grade schedule deleted")
+        
 
 def get_grade_units(grade_code):
     grade = Grade.get_by_code(grade_code)

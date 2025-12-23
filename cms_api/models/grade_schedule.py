@@ -30,7 +30,7 @@ class GradeSchedule(db.Model):
     general_schedule = db.relationship("GeneralSchedule", backref="grade_schedules", lazy="subquery")
 
     @classmethod
-    def find_by_id(cls, id):
+    def find_by_id(cls, id) -> 'GradeSchedule':
         return cls.query.filter_by(id=id).first()
 
     @classmethod
