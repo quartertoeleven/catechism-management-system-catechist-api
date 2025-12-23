@@ -23,9 +23,8 @@ class GeneralSchedule(db.Model):
         nullable=False,
     )
 
-
     @classmethod
-    def find_by_id(cls, id) -> 'GeneralSchedule':
+    def find_by_id(cls, id) -> "GeneralSchedule":
         return cls.query.filter_by(id=id).first()
 
     def to_dict(self):

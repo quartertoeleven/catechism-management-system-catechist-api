@@ -10,7 +10,7 @@ from .base import db
 
 class UserAccount(db.Model, UserMixin):
     __tablename__ = "user_accounts"
-    __table_args__ = {'schema': 'auth'}
+    __table_args__ = {"schema": "auth"}
 
     id = Column(
         UUID(as_uuid=True),

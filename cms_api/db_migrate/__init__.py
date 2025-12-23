@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from cms_api.models.base import db, migrate
 
+
 def create_app(test_config=None):
     load_dotenv()
 

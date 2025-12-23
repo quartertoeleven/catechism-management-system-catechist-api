@@ -15,12 +15,14 @@ class StudyYear(db.Model):
     is_current = Column(Boolean, nullable=False, default=False, server_default="false")
 
     # relationship
-    general_schedule = Mapped[List["GeneralSchedule"]] = relationship(back_populates="study_year", order_by="desc(GeneralSchedule.date)")
+    general_schedule = Mapped[List["GeneralSchedule"]] = relationship(
+        back_populates="study_year", order_by="desc(GeneralSchedule.date)"
+    )
 
     @classmethod
     def get_by_code(cls, code) -> "StudyYear":
         return cls.query.filter_by(code=code).first()
-    
+
     @classmethod
     def get_current(cls) -> "StudyYear":
         return cls.query.filter_by(is_current=True).first()

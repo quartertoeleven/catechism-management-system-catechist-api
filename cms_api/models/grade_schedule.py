@@ -26,11 +26,13 @@ class GradeSchedule(db.Model):
         ForeignKey("grades.id", ondelete="cascade", onupdate="cascade"), nullable=False
     )
 
-    #relationship
-    general_schedule = db.relationship("GeneralSchedule", backref="grade_schedules", lazy="subquery")
+    # relationship
+    general_schedule = db.relationship(
+        "GeneralSchedule", backref="grade_schedules", lazy="subquery"
+    )
 
     @classmethod
-    def find_by_id(cls, id) -> 'GradeSchedule':
+    def find_by_id(cls, id) -> "GradeSchedule":
         return cls.query.filter_by(id=id).first()
 
     @classmethod
@@ -47,5 +49,7 @@ class GradeSchedule(db.Model):
             lesson_content=self.lesson_content,
             is_lesson_attendance_check=self.is_lesson_attendance_check,
             grade_id=self.grade_id,
-            general_schedule=self.general_schedule.to_dict() if self.general_schedule else None
+            general_schedule=(
+                self.general_schedule.to_dict() if self.general_schedule else None
+            ),
         )
