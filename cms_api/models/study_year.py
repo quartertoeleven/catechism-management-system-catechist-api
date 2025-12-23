@@ -1,4 +1,6 @@
 from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy.orm import Mapped, relationship
+from typing import List
 
 from .base import db
 
@@ -11,6 +13,9 @@ class StudyYear(db.Model):
     name = Column(String(100), nullable=False)
     main_subject = Column(String(100))
     is_current = Column(Boolean, nullable=False, default=False, server_default="false")
+
+    # relationship
+    general_schedule = Mapped[List["GeneralSchedule"]] = relationship(back_populates="study_year", order_by="desc(GeneralSchedule.date)")
 
     @classmethod
     def get_by_code(cls, code) -> "StudyYear":
