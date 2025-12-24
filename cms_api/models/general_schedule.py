@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum, Integer, ForeignKey, Date, Boolean
+from sqlalchemy.orm import Mapped, relationship
 
 from .base import db
 from ..helpers.enums import SemesterEnum
@@ -21,6 +22,11 @@ class GeneralSchedule(db.Model):
     study_year_id = Column(
         ForeignKey("study_years.id", ondelete="cascade", onupdate="cascade"),
         nullable=False,
+    )
+
+    # relationships
+    study_year: Mapped["StudyYear"] = relationship(
+        "StudyYear", back_populates="general_schedules"
     )
 
     @classmethod

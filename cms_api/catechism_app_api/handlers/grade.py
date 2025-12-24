@@ -61,8 +61,8 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
             date=schedule_dict.get("date"),
             mass_content=schedule_dict.get("mass_content"),
             is_mass_attendance_check=schedule_dict.get("is_mass_attendance_check"),
-            lesson_conteent=schedule_dict.get("lesson_content"),
-            is_lesson_attenance_check=schedule_dict.get("is_lesson_attendance_check"),
+            lesson_content=schedule_dict.get("lesson_content"),
+            is_lesson_attendance_check=schedule_dict.get("is_lesson_attendance_check"),
             grade_id=grade.id,
         )
 

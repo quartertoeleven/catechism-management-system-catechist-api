@@ -61,7 +61,7 @@ class GradeExamsAPI(MethodView):
 grade_bp.add_url_rule(
     "/grades/<string:grade_code>/schedules",
     view_func=GradeSchedulesAPI.as_view("grade_schedules_endpoint"),
-    methods=["GET"],
+    methods=["GET", "POST"],
 )
 
 grade_bp.add_url_rule(

@@ -15,7 +15,7 @@ class StudyYear(db.Model):
     is_current = Column(Boolean, nullable=False, default=False, server_default="false")
 
     # relationship
-    general_schedule = Mapped[List["GeneralSchedule"]] = relationship(
+    general_schedules: Mapped[List["GeneralSchedule"]] = relationship(
         back_populates="study_year", order_by="desc(GeneralSchedule.date)"
     )
 
