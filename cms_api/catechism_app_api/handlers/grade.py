@@ -1,8 +1,9 @@
-from cms_api.models.base import db
-from cms_api.helpers.enums import SemesterEnum
+from datetime import datetime
 
-from ...models import Grade, GradeSchedule, GeneralSchedule
-from ...models.base import OperationResult
+from cms_api.models.base import db, OperationResult
+from cms_api.models import Grade, GradeSchedule, GeneralSchedule
+
+from cms_api.helpers.enums import SemesterEnum
 
 
 def get_grade_schedules(grade_code):
@@ -21,10 +22,10 @@ def get_grade_schedules(grade_code):
     )
 
 
-def get_specific_grade_schedule(schedule_id):
+def get_specific_grade_schedule(grade_code, schedule_id):
     schedule = GradeSchedule.find_by_id(schedule_id)
 
-    if schedule is None:
+    if schedule is None or schedule.grade.code != grade_code:
         return OperationResult(success=False, message="Schedule not found")
 
     return OperationResult(
@@ -50,21 +51,38 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
             return OperationResult(
                 success=False, message="Cannot edit schedule of other grade"
             )
+        current_grade_schedule.date = schedule_dict.get("date")
+        current_grade_schedule.semester = SemesterEnum(schedule_dict.get("semester"))
+        current_grade_schedule.mass_content = schedule_dict.get("mass_content")
+        current_grade_schedule.is_mass_attendance_check = schedule_dict.get(
+            "is_mass_attendance_check"
+        )
+        current_grade_schedule.lesson_content = schedule_dict.get("lesson_content")
+        current_grade_schedule.is_lesson_attendance_check = schedule_dict.get(
+            "is_lesson_attendance_check"
+        )
 
     else:
+        schedule_date = datetime.strptime(schedule_dict.get("date"), "%Y-%m-%d")
+        existing_schedule = GradeSchedule.find_by_grade_and_date(grade, schedule_date)
+
+        if existing_schedule is not None:
+            return OperationResult(
+                success=False,
+                message="Đã có lịch hoạt động cho ngày được chọn. Vui lòng chọn ngày khác.",
+            )
+
         current_grade_schedule = GradeSchedule(
-            semester=(
-                SemesterEnum(schedule_dict.get("semester"))
-                if schedule_dict.get("semester") is not None
-                else None
-            ),
             date=schedule_dict.get("date"),
+            semester=(SemesterEnum(schedule_dict.get("semester"))),
             mass_content=schedule_dict.get("mass_content"),
             is_mass_attendance_check=schedule_dict.get("is_mass_attendance_check"),
             lesson_content=schedule_dict.get("lesson_content"),
             is_lesson_attendance_check=schedule_dict.get("is_lesson_attendance_check"),
             grade_id=grade.id,
         )
+
+        db.session.add(current_grade_schedule)
 
     # aligning the grade schedule with general schedule for empty information
     if schedule_dict.get("general_schedule_id") is not None:
@@ -98,12 +116,11 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
                 general_schedule.is_lesson_attendance_check
             )
 
-    db.session.add(current_grade_schedule)
     db.session.flush()
 
     return OperationResult(
         success=True,
-        message="Grade schedule created",
+        message="Grade schedule updated",
         data=current_grade_schedule.to_dict(),
     )
 

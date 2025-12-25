@@ -9,6 +9,7 @@ from ..handlers.grade import (
     get_grade_units,
     get_grade_exams,
     create_or_update_grade_schedule,
+    get_specific_grade_schedule,
     delete_grade_schedule,
 )
 
@@ -33,6 +34,10 @@ class GradeSchedulesAPI(MethodView):
 
 class GradeScheduleAPI(MethodView):
     decorators = [login_required]
+
+    def get(self, grade_code, schedule_id):
+        result = get_specific_grade_schedule(grade_code, schedule_id)
+        return result.to_json_response()
 
     def delete(self, grade_code, schedule_id):
         result = delete_grade_schedule(grade_code, schedule_id)
@@ -67,7 +72,7 @@ grade_bp.add_url_rule(
 grade_bp.add_url_rule(
     "/grades/<string:grade_code>/schedules/<int:schedule_id>",
     view_func=GradeScheduleAPI.as_view("grade_schedule_endpoint"),
-    methods=["DELETE"],
+    methods=["GET", "DELETE"],
 )
 
 grade_bp.add_url_rule(

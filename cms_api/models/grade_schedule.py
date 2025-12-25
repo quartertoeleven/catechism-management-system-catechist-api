@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum, Integer, ForeignKey, Date, Boolean
+from sqlalchemy.orm import Mapped
 
 from .base import db
 from ..helpers.enums import SemesterEnum
@@ -30,13 +31,20 @@ class GradeSchedule(db.Model):
     general_schedule = db.relationship(
         "GeneralSchedule", backref="grade_schedules", lazy="subquery"
     )
+    grade: Mapped["Grade"] = db.relationship(
+        "Grade", backref="grade_schedules", lazy="subquery"
+    )
 
     @classmethod
     def find_by_id(cls, id) -> "GradeSchedule":
         return cls.query.filter_by(id=id).first()
 
     @classmethod
-    def get_schedules_for_grade(cls, grade: Grade):
+    def find_by_grade_and_date(cls, grade: Grade, date) -> "GradeSchedule":
+        return cls.query.filter_by(grade_id=grade.id, date=date).first()
+
+    @classmethod
+    def get_schedules_for_grade(cls, grade: Grade) -> list["GradeSchedule"]:
         return cls.query.filter_by(grade_id=grade.id).order_by(cls.date.desc()).all()
 
     def to_dict(self):
