@@ -6,6 +6,7 @@ from .unit_bp import unit_bp
 from .attendance_bp import attendance_bp
 from .user_profile_bp import user_profile_bp
 
+from .study_year_bp import study_year_bp
 from .exam_bp import exam_bp
 from .student_bp import student_bp
 
@@ -23,6 +24,7 @@ def register_blueprints(app, url_prefix):
     app.register_blueprint(user_profile_bp, url_prefix=url_prefix)
     app.register_blueprint(exam_bp, url_prefix=url_prefix)
     app.register_blueprint(student_bp, url_prefix=url_prefix)
+    app.register_blueprint(study_year_bp, url_prefix=url_prefix)
     # cli
     app.register_blueprint(user_account_cli_bp, cli_group="account")
     app.register_blueprint(data_import_cli_bp, cli_group="import")

@@ -53,6 +53,7 @@ class Student(db.Model):
             last_name=self.last_name,
             middle_name=self.middle_name,
             first_name=self.first_name,
+            full_name=self.full_name,
             gender=self.gender.value,
             date_of_birth=self.date_of_birth,
         )

@@ -68,9 +68,10 @@ def reset_account_password(login_id):
         dict(password=new_password),
     )
 
+
 def get_current_user_profile():
     result = current_user.to_dict()
-    
+
     current_unit_dict = None
     current_grade_dict = None
 
@@ -80,25 +81,29 @@ def get_current_user_profile():
         all_catechist_units = current_catechist.units
 
         if len(all_catechist_units) > 0:
-            current_unit = list(filter(
-                lambda unit: unit.grade.study_year_id == current_study_year.id, all_catechist_units
-            ))
+            current_unit = list(
+                filter(
+                    lambda unit: unit.grade.study_year_id == current_study_year.id,
+                    all_catechist_units,
+                )
+            )
 
         current_unit_dict = current_unit[0].to_dict() if len(current_unit) > 0 else None
         current_grade_dict = current_unit[0].grade.to_dict()
 
-    
     result["current_unit"] = current_unit_dict
     result["current_grade"] = current_grade_dict
 
     return OperationResult(True, "User profile found", result)
 
-    
-def change_account_password(current_password: string, new_password: string, confirm_password: string) -> OperationResult:
+
+def change_account_password(
+    current_password: string, new_password: string, confirm_password: string
+) -> OperationResult:
 
     if len(new_password) < 8:
         return OperationResult(False, "Mật khẩu phải chứa ít nhất 8 kí tự")
-    
+
     if len(new_password) > 32:
         return OperationResult(False, "Mật khẩu dài tối đa 32 kí tự")
 

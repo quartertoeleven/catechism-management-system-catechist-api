@@ -19,7 +19,10 @@ class Unit(db.Model):
         "Student", secondary="unit_students", order_by="Student.first_name"
     )
     catechists = db.relationship(
-        "Catechist", secondary="unit_catechists", order_by="Catechist.first_name", back_populates="units"
+        "Catechist",
+        secondary="unit_catechists",
+        order_by="Catechist.first_name",
+        back_populates="units",
     )
     grade = db.relationship("Grade", backref="units")
 

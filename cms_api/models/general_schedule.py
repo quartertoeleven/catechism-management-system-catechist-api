@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum, Integer, ForeignKey, Date, Boolean
+from sqlalchemy.orm import Mapped, relationship
 
 from .base import db
 from ..helpers.enums import SemesterEnum
@@ -22,3 +23,23 @@ class GeneralSchedule(db.Model):
         ForeignKey("study_years.id", ondelete="cascade", onupdate="cascade"),
         nullable=False,
     )
+
+    # relationships
+    study_year: Mapped["StudyYear"] = relationship(
+        "StudyYear", back_populates="general_schedules"
+    )
+
+    @classmethod
+    def find_by_id(cls, id) -> "GeneralSchedule":
+        return cls.query.filter_by(id=id).first()
+
+    def to_dict(self):
+        return dict(
+            id=self.id,
+            semester=self.semester.value,
+            date=self.date,
+            mass_content=self.mass_content,
+            is_mass_attendance_check=self.is_mass_attendance_check,
+            lesson_content=self.lesson_content,
+            is_lesson_attendance_check=self.is_lesson_attendance_check,
+        )

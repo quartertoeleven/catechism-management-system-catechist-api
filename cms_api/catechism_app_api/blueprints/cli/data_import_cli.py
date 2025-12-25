@@ -6,6 +6,7 @@ from ...handlers.data_import import import_unit_students_from_excel
 
 data_import_cli_bp = Blueprint("data_import_cli_bp", __name__)
 
+
 @data_import_cli_bp.cli.command("unitstudents")
 @click.argument("file_path")
 def import_students(file_path):
@@ -17,6 +18,7 @@ def import_students(file_path):
         click.echo(result.data)
     else:
         click.echo(result.message, err=True)
+
 
 # import click
 

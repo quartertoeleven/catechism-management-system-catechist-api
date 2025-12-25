@@ -35,7 +35,13 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    CORS(app, supports_credentials=True, origins=(os.getenv("CORS_ORIGINS") if os.getenv("CORS_ORIGINS") else "").split(","))
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=(os.getenv("CORS_ORIGINS") if os.getenv("CORS_ORIGINS") else "").split(
+            ","
+        ),
+    )
 
     db.init_app(app)
 

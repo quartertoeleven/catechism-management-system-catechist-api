@@ -20,6 +20,7 @@ class ExamsAPI(MethodView):
 
         return result.to_json_response()
 
+
 class ExamAPI(MethodView):
     decorators = [login_required]
 
@@ -31,6 +32,11 @@ class ExamAPI(MethodView):
         return result.to_json_response()
 
 
-exam_bp.add_url_rule("/exams", view_func=ExamsAPI.as_view("exams_endpoint"), methods=["POST"])
-exam_bp.add_url_rule("/exams/<int:exam_id>", view_func=ExamAPI.as_view("exam_endpoint"), methods=["DELETE"])
-
+exam_bp.add_url_rule(
+    "/exams", view_func=ExamsAPI.as_view("exams_endpoint"), methods=["POST"]
+)
+exam_bp.add_url_rule(
+    "/exams/<int:exam_id>",
+    view_func=ExamAPI.as_view("exam_endpoint"),
+    methods=["DELETE"],
+)
