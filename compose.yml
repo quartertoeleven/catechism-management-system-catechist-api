@@ -6,7 +6,7 @@ volumes:
 
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:17
     container_name: catechism-management-system-db
     ports:
       - "5432:5432"

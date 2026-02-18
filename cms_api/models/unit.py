@@ -16,7 +16,10 @@ class Unit(db.Model):
     )
     # relationship
     students = db.relationship(
-        "Student", secondary="unit_students", order_by="Student.first_name"
+        "Student",
+        secondary="unit_students",
+        order_by="collate(Student.first_name, 'vi-VN-x-icu')",
+        lazy="subquery",
     )
     catechists = db.relationship(
         "Catechist",

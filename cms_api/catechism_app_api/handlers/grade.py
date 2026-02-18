@@ -93,6 +93,8 @@ def create_or_update_grade_schedule(grade_code, schedule_dict):
         if general_schedule is None:
             return OperationResult(success=False, message="General schedule not found")
 
+        current_grade_schedule.general_schedule_id = general_schedule.id
+
         if current_grade_schedule.semester is None:
             current_grade_schedule.semester = general_schedule.semester
         if current_grade_schedule.date is None:
