@@ -1,6 +1,7 @@
 from .catechist import Catechist
 from .user_account import UserAccount
 from .student import Student
+from .personal_contact_info import PersonalContactInfo
 
 from .study_year import StudyYear
 

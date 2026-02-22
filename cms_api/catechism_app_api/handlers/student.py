@@ -25,3 +25,14 @@ def create_or_update_student_exam_score(student_code, exam_id, score):
     db.session.flush()
 
     return OperationResult(success=True, message="Student exam score updated")
+
+
+def get_student_details(student_code):
+    student = Student.find_by_code(student_code)
+
+    if student is None:
+        return OperationResult(success=False, message="Student not found")
+
+    return OperationResult(
+        success=True, message="Student found", data=student.to_dict()
+    )

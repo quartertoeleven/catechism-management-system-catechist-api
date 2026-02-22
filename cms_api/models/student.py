@@ -1,7 +1,9 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, String, Enum, Date
+from sqlalchemy import Column, String, Enum, Date, Boolean
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.dialects.postgresql import UUID
+from typing import List
 
 from .base import db
 from ..helpers.enums import GenderEnum
@@ -23,6 +25,36 @@ class Student(db.Model):
     first_name = Column(String(30), nullable=False)
     gender = Column(Enum(GenderEnum), nullable=False)
     date_of_birth = Column(Date)
+    # address field
+    address_city = Column(String(100))
+    address_ward = Column(String(100))
+    address_quarter = Column(String(100))
+    address_street = Column(String(100))
+    address_house_no = Column(String(100))
+    is_old_address = Column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
+    old_address_city = Column(String(100))
+    old_address_district = Column(String(100))
+    old_address_ward = Column(String(100))
+    old_address_quarter = Column(String(100))
+    old_address_street = Column(String(100))
+    old_address_house_no = Column(String(100))
+    # parents info
+    father_saint_name = Column(String(30))
+    father_full_name = Column(String(100))
+    father_job = Column(String(100))
+    mother_saint_name = Column(String(30))
+    mother_full_name = Column(String(100))
+    mother_job = Column(String(100))
+
+    # relationship
+    # general_schedules: Mapped[List["GeneralSchedule"]] = relationship(
+    #     back_populates="study_year", order_by="desc(GeneralSchedule.date)"
+    # )
+    contacts: Mapped[List["PersonalContactInfo"]] = relationship(
+        back_populates="student"
+    )
 
     @classmethod
     def find_by_code(cls, code) -> "Student":
@@ -56,4 +88,23 @@ class Student(db.Model):
             full_name=self.full_name,
             gender=self.gender.value,
             date_of_birth=self.date_of_birth,
+            address_city=self.address_city,
+            address_ward=self.address_ward,
+            address_quarter=self.address_quarter,
+            address_street=self.address_street,
+            address_house_no=self.address_house_no,
+            is_old_address=self.is_old_address,
+            old_address_city=self.old_address_city,
+            old_address_district=self.old_address_district,
+            old_address_ward=self.old_address_ward,
+            old_address_quarter=self.old_address_quarter,
+            old_address_street=self.old_address_street,
+            old_address_house_no=self.old_address_house_no,
+            father_saint_name=self.father_saint_name,
+            father_full_name=self.father_full_name,
+            father_job=self.father_job,
+            mother_saint_name=self.mother_saint_name,
+            mother_full_name=self.mother_full_name,
+            mother_job=self.mother_job,
+            contacts=[contact.to_dict() for contact in self.contacts],
         )

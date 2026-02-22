@@ -1,7 +1,9 @@
 from uuid import uuid4
 
 from sqlalchemy import Column, String, Enum
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.dialects.postgresql import UUID
+from typing import List
 
 from .base import db
 from ..helpers.enums import TitleEnum, GenderEnum
@@ -24,7 +26,10 @@ class Catechist(db.Model):
     gender = Column(Enum(GenderEnum), nullable=False)
 
     # relationship
-    units = db.relationship("Unit", secondary="unit_catechists", order_by="Unit.code")
+    units = relationship("Unit", secondary="unit_catechists", order_by="Unit.code")
+    contacts: Mapped[List["PersonalContactInfo"]] = relationship(
+        back_populates="catechist"
+    )
 
     @classmethod
     def find_by_id(cls, id) -> "Catechist":
@@ -38,4 +43,5 @@ class Catechist(db.Model):
             middle_name=self.middle_name,
             first_name=self.first_name,
             gender=self.gender.value,
+            contacts=[contact.to_dict() for contact in self.contacts],
         )

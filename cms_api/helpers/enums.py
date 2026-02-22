@@ -28,3 +28,23 @@ class AttendanceStatusEnum(enum.Enum):
 class AttendanceTypeEnum(enum.Enum):
     LESSON = "lesson"
     MASS = "mass"
+
+
+class ContactInfoTypeEnum(enum.Enum):
+    EMAIL = "email"
+    PHONE = "phone"
+    ZALO = "zalo"
+    FACEBOOK = "facebook"
+    OTHER = "other"
+
+
+class ContactRelationTypeEnum(enum.Enum):
+    FATHER = "father"
+    MOTHER = "mother"
+    GRANDFATHER = "grandfather"
+    GRANDMOTHER = "grandmother"
+    BROTHER = "brother"
+    SISTER = "sister"
+    AUNT = "aunt"
+    UNCLE = "uncle"
+    OTHER = "other"
