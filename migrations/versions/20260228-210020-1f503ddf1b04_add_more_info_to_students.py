@@ -1,8 +1,8 @@
-"""add student parents info and parents info and contact info
+"""add more info to students
 
-Revision ID: 26b36acc5cf2
+Revision ID: 1f503ddf1b04
 Revises: 301014c552ef
-Create Date: 2026-02-21 22:37:43.091910
+Create Date: 2026-02-28 21:00:20.569277
 
 """
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "26b36acc5cf2"
+revision = "1f503ddf1b04"
 down_revision = "301014c552ef"
 branch_labels = None
 depends_on = None
@@ -80,42 +80,34 @@ def upgrade():
     )
     with op.batch_alter_table("students", schema=None) as batch_op:
         batch_op.add_column(
-            sa.Column("address_city", sa.String(length=100), nullable=True)
+            sa.Column(
+                "is_baptized", sa.Boolean(), server_default="true", nullable=False
+            )
         )
+        batch_op.add_column(sa.Column("baptism_date", sa.Date(), nullable=True))
         batch_op.add_column(
-            sa.Column("address_ward", sa.String(length=100), nullable=True)
-        )
-        batch_op.add_column(
-            sa.Column("address_quarter", sa.String(length=100), nullable=True)
-        )
-        batch_op.add_column(
-            sa.Column("address_street", sa.String(length=100), nullable=True)
-        )
-        batch_op.add_column(
-            sa.Column("address_house_no", sa.String(length=100), nullable=True)
+            sa.Column("baptism_place", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
             sa.Column(
-                "is_old_address", sa.Boolean(), server_default="true", nullable=False
+                "is_confirmed", sa.Boolean(), server_default="false", nullable=False
             )
         )
+        batch_op.add_column(sa.Column("confirmation_date", sa.Date(), nullable=True))
         batch_op.add_column(
-            sa.Column("old_address_city", sa.String(length=100), nullable=True)
+            sa.Column("confirmation_place", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
-            sa.Column("old_address_district", sa.String(length=100), nullable=True)
+            sa.Column("address_line_1", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
-            sa.Column("old_address_ward", sa.String(length=100), nullable=True)
+            sa.Column("address_line_2", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
-            sa.Column("old_address_quarter", sa.String(length=100), nullable=True)
+            sa.Column("old_address_line_1", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
-            sa.Column("old_address_street", sa.String(length=100), nullable=True)
-        )
-        batch_op.add_column(
-            sa.Column("old_address_house_no", sa.String(length=100), nullable=True)
+            sa.Column("old_address_line_2", sa.String(length=100), nullable=True)
         )
         batch_op.add_column(
             sa.Column("father_saint_name", sa.String(length=30), nullable=True)
@@ -149,18 +141,16 @@ def downgrade():
         batch_op.drop_column("father_job")
         batch_op.drop_column("father_full_name")
         batch_op.drop_column("father_saint_name")
-        batch_op.drop_column("old_address_house_no")
-        batch_op.drop_column("old_address_street")
-        batch_op.drop_column("old_address_quarter")
-        batch_op.drop_column("old_address_ward")
-        batch_op.drop_column("old_address_district")
-        batch_op.drop_column("old_address_city")
-        batch_op.drop_column("is_old_address")
-        batch_op.drop_column("address_house_no")
-        batch_op.drop_column("address_street")
-        batch_op.drop_column("address_quarter")
-        batch_op.drop_column("address_ward")
-        batch_op.drop_column("address_city")
+        batch_op.drop_column("old_address_line_2")
+        batch_op.drop_column("old_address_line_1")
+        batch_op.drop_column("address_line_2")
+        batch_op.drop_column("address_line_1")
+        batch_op.drop_column("confirmation_place")
+        batch_op.drop_column("confirmation_date")
+        batch_op.drop_column("is_confirmed")
+        batch_op.drop_column("baptism_place")
+        batch_op.drop_column("baptism_date")
+        batch_op.drop_column("is_baptized")
 
     op.drop_table("personal_contact_infos")
     sa.Enum(

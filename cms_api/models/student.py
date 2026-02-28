@@ -25,21 +25,19 @@ class Student(db.Model):
     first_name = Column(String(30), nullable=False)
     gender = Column(Enum(GenderEnum), nullable=False)
     date_of_birth = Column(Date)
-    # address field
-    address_city = Column(String(100))
-    address_ward = Column(String(100))
-    address_quarter = Column(String(100))
-    address_street = Column(String(100))
-    address_house_no = Column(String(100))
-    is_old_address = Column(
-        Boolean, nullable=False, default=True, server_default="true"
+    is_baptized = Column(Boolean, nullable=False, default=True, server_default="true")
+    baptism_date = Column(Date)
+    baptism_place = Column(String(100))
+    is_confirmed = Column(
+        Boolean, nullable=False, default=False, server_default="false"
     )
-    old_address_city = Column(String(100))
-    old_address_district = Column(String(100))
-    old_address_ward = Column(String(100))
-    old_address_quarter = Column(String(100))
-    old_address_street = Column(String(100))
-    old_address_house_no = Column(String(100))
+    confirmation_date = Column(Date)
+    confirmation_place = Column(String(100))
+    # address field
+    address_line_1 = Column(String(100))
+    address_line_2 = Column(String(100))
+    old_address_line_1 = Column(String(100))
+    old_address_line_2 = Column(String(100))
     # parents info
     father_saint_name = Column(String(30))
     father_full_name = Column(String(100))
@@ -88,18 +86,16 @@ class Student(db.Model):
             full_name=self.full_name,
             gender=self.gender.value,
             date_of_birth=self.date_of_birth,
-            address_city=self.address_city,
-            address_ward=self.address_ward,
-            address_quarter=self.address_quarter,
-            address_street=self.address_street,
-            address_house_no=self.address_house_no,
-            is_old_address=self.is_old_address,
-            old_address_city=self.old_address_city,
-            old_address_district=self.old_address_district,
-            old_address_ward=self.old_address_ward,
-            old_address_quarter=self.old_address_quarter,
-            old_address_street=self.old_address_street,
-            old_address_house_no=self.old_address_house_no,
+            is_baptized=self.is_baptized,
+            baptism_date=self.baptism_date,
+            baptism_place=self.baptism_place,
+            is_confirmed=self.is_confirmed,
+            confirmation_date=self.confirmation_date,
+            confirmation_place=self.confirmation_place,
+            address_line_1=self.address_line_1,
+            address_line_2=self.address_line_2,
+            old_address_line_1=self.old_address_line_1,
+            old_address_line_2=self.old_address_line_2,
             father_saint_name=self.father_saint_name,
             father_full_name=self.father_full_name,
             father_job=self.father_job,
