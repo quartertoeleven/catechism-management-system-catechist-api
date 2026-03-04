@@ -18,9 +18,10 @@ pandas = "*"
 openpyxl = "*"
 segno = "*"
 imgkit = "*"
+unidecode = "*"
 
 [dev-packages]
 black = "*"
 
 [requires]
-python_version = "3.13"
+python_version = "3.14"
