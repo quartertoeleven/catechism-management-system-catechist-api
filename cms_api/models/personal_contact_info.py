@@ -37,7 +37,7 @@ class PersonalContactInfo(db.Model):
     def to_dict(self):
         return dict(
             id=self.id,
-            relationship=self.relationship.value,
+            relationship=self.relationship.value if self.relationship is not None else None,
             type=self.type.value,
             info=self.info,
         )
