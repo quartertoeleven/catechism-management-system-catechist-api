@@ -10,7 +10,7 @@ from .study_year_bp import study_year_bp
 from .exam_bp import exam_bp
 from .student_bp import student_bp
 
-from .qrreader_bp import qr_reader_bp
+from .qr_reader_bp import qr_reader_bp
 
 
 from .cli.user_account_cli import user_account_cli_bp

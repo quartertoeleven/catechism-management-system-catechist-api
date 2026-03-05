@@ -12,11 +12,11 @@ class QrReaderAPI(MethodView):
 
     def post(self):
         request_body = request.get_json()
-        return read_student_qr_code(request_body).to_json_response()
+        return read_student_qr_code(request_body.get("raw_qr_str")).to_json_response()
 
 
 qr_reader_bp.add_url_rule(
-    "/qrreader",
+    "/qr-reader",
     view_func=QrReaderAPI.as_view("qr_reader_endpoint"),
     methods=["POST"]
 )
