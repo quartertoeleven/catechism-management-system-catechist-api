@@ -10,6 +10,8 @@ from .study_year_bp import study_year_bp
 from .exam_bp import exam_bp
 from .student_bp import student_bp
 
+from .qr_reader_bp import qr_reader_bp
+
 
 from .cli.user_account_cli import user_account_cli_bp
 from .cli.data_import_cli import data_import_cli_bp
@@ -25,6 +27,7 @@ def register_blueprints(app, url_prefix):
     app.register_blueprint(exam_bp, url_prefix=url_prefix)
     app.register_blueprint(student_bp, url_prefix=url_prefix)
     app.register_blueprint(study_year_bp, url_prefix=url_prefix)
+    app.register_blueprint(qr_reader_bp, url_prefix=url_prefix)
     # cli
     app.register_blueprint(user_account_cli_bp, cli_group="account")
     app.register_blueprint(data_import_cli_bp, cli_group="import")

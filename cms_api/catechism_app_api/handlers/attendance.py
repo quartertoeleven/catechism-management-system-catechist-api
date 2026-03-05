@@ -42,11 +42,11 @@ def handle_attendance_check(
 
     student = Student.find_by_code(student_code)
     if student is None:
-        return OperationResult(success=False, message="Student not found")
+        return OperationResult(success=False, message="Không tìm thấy học viên")
 
     grade_schedule = GradeSchedule.find_by_id(grade_schedule_id)
     if grade_schedule is None:
-        return OperationResult(success=False, message="Grade schedule not found")
+        return OperationResult(success=False, message="Không tìm thấy lịch sinh hoạt khối")
 
     type_enum = AttendanceTypeEnum(type)
     status_enum = AttendanceStatusEnum(status)
@@ -64,7 +64,7 @@ def handle_attendance_check(
     )
 
     return OperationResult(
-        success=True, message="Attendance checked done", data=result_dict
+        success=True, message="Điểm danh thành công", data=result_dict
     )
 
 
@@ -74,7 +74,7 @@ def handle_attendance_check_using_qr(
     raw_str_from_qr = attendance_check_dict_with_qr.get("qrData")
     student_code = get_student_code_from_qr(raw_str_from_qr)
     if student_code is None:
-        return OperationResult(success=False, message="QR data not valid")
+        return OperationResult(success=False, message="Mã QR không đúng định dạng")
 
     attendance_check_dict = dict(
         student_code=student_code,
