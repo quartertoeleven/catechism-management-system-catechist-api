@@ -19,6 +19,7 @@ openpyxl = "*"
 segno = "*"
 imgkit = "*"
 unidecode = "*"
+pytz = "*"
 
 [dev-packages]
 black = "*"
