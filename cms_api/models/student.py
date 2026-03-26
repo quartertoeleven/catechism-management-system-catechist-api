@@ -77,7 +77,18 @@ class Student(db.Model):
         gender = "Nam" if self.gender == GenderEnum.MALE else "Nữ"
         return f"{church_name}|{student_code}|{full_name}|{gender}"
 
-    def to_dict(self, with_group=False):
+    def to_dict(self, with_group=False, basic_info_only=False):
+        if basic_info_only:
+            return dict(
+                code=self.code,
+                saint_name=self.saint_name,
+                last_name=self.last_name,
+                middle_name=self.middle_name,
+                first_name=self.first_name,
+                full_name=self.full_name,
+                full_name_without_accent=unidecode(self.full_name),
+                gender=self.gender.value,
+            )
         if not with_group:
             return dict(
                 code=self.code,

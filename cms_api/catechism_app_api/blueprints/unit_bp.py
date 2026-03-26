@@ -9,6 +9,7 @@ from ..handlers.unit import (
     get_unit_attendances_for_schedule,
     get_unit_exam_scores,
     get_unit_attendances_statistics,
+    get_unit_year_end_statistics
 )
 
 unit_bp = Blueprint("unit_bp", __name__)
@@ -61,7 +62,7 @@ class UnitStatisticAPI(MethodView):
     decorators = [login_required]
 
     def get(self, unit_code):
-        result = get_unit_attendances_statistics(unit_code)
+        result = get_unit_year_end_statistics(unit_code)
         return result.to_json_response()
 
 
