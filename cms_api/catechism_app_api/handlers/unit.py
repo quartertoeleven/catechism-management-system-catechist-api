@@ -368,7 +368,16 @@ def __get_unit_attendances_for_year_end(unit: Unit):
                     )
             
             result_dict[student.code]["details"].append(attendance_entry)
-    
+        
+        result_dict[student.code]["mass_total_present"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.PRESENT.value)
+        result_dict[student.code]["mass_total_leave"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.LEAVE.value)
+        result_dict[student.code]["mass_total_absent"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.ABSENT.value)
+        result_dict[student.code]["lesson_total_present"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.PRESENT.value)
+        result_dict[student.code]["lesson_total_leave"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.LEAVE.value)
+        result_dict[student.code]["lesson_total_absent"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.ABSENT.value)
+        result_dict[student.code]["mass_total"] = result_dict[student.code]["mass_total_present"] + result_dict[student.code]["mass_total_leave"] + result_dict[student.code]["mass_total_absent"]
+        result_dict[student.code]["lesson_total"] = result_dict[student.code]["lesson_total_present"] + result_dict[student.code]["lesson_total_leave"] + result_dict[student.code]["lesson_total_absent"]
+        
     return result_dict
 
 def __get_unit_score_for_year_end(unit: Unit):

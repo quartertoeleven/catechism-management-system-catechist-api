@@ -57,13 +57,20 @@ class UnitTestScoresAPI(MethodView):
         result = get_unit_exam_scores(unit_code, exam_id)
         return result.to_json_response()
 
-
-class UnitStatisticAPI(MethodView):
+class UnitYearEndAPI(MethodView):
     decorators = [login_required]
 
     def get(self, unit_code):
         result = get_unit_year_end_statistics(unit_code)
         return result.to_json_response()
+
+
+# class UnitStatisticAPI(MethodView):
+#     decorators = [login_required]
+
+#     def get(self, unit_code):
+#         result = get_unit_year_end_statistics(unit_code)
+#         return result.to_json_response()
 
 
 unit_bp.add_url_rule(
@@ -95,7 +102,7 @@ unit_bp.add_url_rule(
 )
 
 unit_bp.add_url_rule(
-    "/units/<string:unit_code>/statistics/attendances",
-    view_func=UnitStatisticAPI.as_view("unit_attendances_statistics_api_endpoint"),
+    "/units/<string:unit_code>/year-end",
+    view_func=UnitYearEndAPI.as_view("unit_year_end_api_endpoint"),
     methods=["GET"],
 )
