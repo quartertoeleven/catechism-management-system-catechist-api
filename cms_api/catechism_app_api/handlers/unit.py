@@ -1,4 +1,4 @@
-from ...models import (
+from cms_api.models import (
     Unit,
     Catechist,
     StudyYear,
@@ -7,15 +7,10 @@ from ...models import (
     StudentAttendance,
     Exam,
     ExamScore,
+    StudyYearResult
 )
 from ...models.base import OperationResult, db
 from ...helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
-
-# def _get_unit_students(unit: Unit):
-#     unit_students = unit.students
-#     unit_student_dicts = [unit_student.to_dict() for unit_student in unit_students]
-
-#     return OperationResult(success=True, message="Unit student found", data=unit_student_dicts)
 
 
 def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
@@ -446,19 +441,23 @@ def get_unit_year_end_statistics(unit_code):
 
     result = unit.to_dict()
 
-    result["students"] = list(map(lambda student: student.to_dict(basic_info_only=True), unit_students))
+    # result["students"] = list(map(lambda student: student.to_dict(basic_info_only=True), unit_students))
+    result["students"] = []
 
-    for student_dict in result["students"]:
+    for student in unit_students:
+        student_dict = student.to_dict(basic_info_only=True)
         student_dict["attendances"] = attendance_dict[student_dict.get("code")]
         student_dict["exam_scores"] = exam_scores_dict[student_dict.get("code")]
-
+        
+        year_end_result = StudyYearResult.get_by_student_and_study_year(student.id, unit.grade.study_year.id)
+        if year_end_result:
+            student_dict["year_end_result"] = year_end_result.to_dict()
+        else:
+            default_result_entry = StudyYearResult.create_default(student.id, unit.grade.study_year.id)
+            default_result_entry.student = student
+            default_result_entry.study_year = unit.grade.study_year
+            student_dict["year_end_result"] = default_result_entry.to_dict()
     
+        result["students"].append(student_dict)
 
-    # TODO: Implement year-end statistics calculation
-    # This should calculate:
-    # - Average attendance per student
-    # - Overall unit completion rate
-    # - Top performing students
-    # - Areas needing improvement
-    
     return OperationResult(success=True, message="Year-end statistics calculated", data=result)

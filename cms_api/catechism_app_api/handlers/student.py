@@ -1,9 +1,11 @@
 from cms_api.models.base import OperationResult, db
-from cms_api.models import Student, ExamScore, Exam, PersonalContactInfo
+from cms_api.models import Student, ExamScore, Exam, PersonalContactInfo, StudyYear, StudyYearResult
 from cms_api.helpers.enums import (
     GenderEnum,
     ContactInfoTypeEnum,
     ContactRelationTypeEnum,
+    RankingInUnitEnum,
+    StudyYearResultEnum
 )
 
 
@@ -163,3 +165,41 @@ def delete_student_contact(student_code, contact_id):
         message="Xóa liên lạc thành công",
         data=student.to_dict(True).get("contacts"),
     )
+
+def update_student_year_end_result(student_code, year_end_result_dict):
+    student = Student.find_by_code(student_code)
+
+    if student is None:
+        return OperationResult(success=False, message="Student not found")
+    
+    # Get the current year end result
+    study_year_code = year_end_result_dict.get("study_year_code")
+    study_year: StudyYear
+
+    if study_year_code is None:
+        study_year = StudyYear.get_current_study_year()
+    else:
+        study_year = StudyYear.get_by_code(study_year_code)
+    
+    if study_year is None:
+        return OperationResult(success=False, message="Study year not found")
+    
+    existing_result = StudyYearResult.get_by_student_and_study_year(student.id, study_year.id)
+    
+    if existing_result is None:
+        new_result = StudyYearResult.create_default(student.id, study_year.id)
+        new_result.remark = year_end_result_dict.get("remark")
+        new_result.result = StudyYearResultEnum(year_end_result_dict.get("result")) if year_end_result_dict.get("result") else None
+        new_result.unit_ranking = RankingInUnitEnum(year_end_result_dict.get("unit_ranking")) if year_end_result_dict.get("unit_ranking") else None
+        new_result.notes = year_end_result_dict.get("notes")
+        db.session.add(new_result)
+    else:
+        # Update the year end result
+        existing_result.remark = year_end_result_dict.get("remark")
+        existing_result.result = StudyYearResultEnum(year_end_result_dict.get("result")) if year_end_result_dict.get("result") else None
+        existing_result.unit_ranking = RankingInUnitEnum(year_end_result_dict.get("unit_ranking")) if year_end_result_dict.get("unit_ranking") else None
+        existing_result.notes = year_end_result_dict.get("notes")
+    
+    db.session.flush()
+
+    return OperationResult(success=True, message="Cập nhật kết quả cuối năm thành công")

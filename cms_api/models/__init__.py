@@ -17,3 +17,5 @@ from .student_attendance import StudentAttendance
 
 from .exam import Exam
 from .exam_score import ExamScore
+
+from .study_year_result import StudyYearResult
