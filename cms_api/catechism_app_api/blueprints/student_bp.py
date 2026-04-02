@@ -8,7 +8,8 @@ from ..handlers.student import (
     get_student_details,
     update_student_details,
     create_or_update_student_contacts,
-    delete_student_contact
+    delete_student_contact,
+    update_student_year_end_result
 )
 
 student_bp = Blueprint("student_bp", __name__)
@@ -58,6 +59,16 @@ class StudentExamScoresAPI(MethodView):
             db.session.commit()
         return result.to_json_response()
 
+class StudentYearEndResultsAPI(MethodView):
+    decorators = [login_required]
+    
+    def post(self, student_code):
+        request_body = request.get_json()
+        result = update_student_year_end_result(student_code, request_body)
+        if result.success:
+            db.session.commit()
+        return result.to_json_response()
+
 
 student_bp.add_url_rule(
     "/students/<string:student_code>",
@@ -81,4 +92,10 @@ student_bp.add_url_rule(
     "/students/<string:student_code>/contacts/<int:contact_id>",
     view_func=StudentContactsAPI.as_view("student_contacts_removal"),
     methods=["DELETE"]
+)
+
+student_bp.add_url_rule(
+    "/students/<string:student_code>/year-end-results",
+    view_func=StudentYearEndResultsAPI.as_view("student_year_end_results"),
+    methods=["POST"]
 )

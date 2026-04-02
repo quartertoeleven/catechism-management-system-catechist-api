@@ -1,4 +1,4 @@
-from ...models import (
+from cms_api.models import (
     Unit,
     Catechist,
     StudyYear,
@@ -7,15 +7,10 @@ from ...models import (
     StudentAttendance,
     Exam,
     ExamScore,
+    StudyYearResult
 )
 from ...models.base import OperationResult, db
 from ...helpers.enums import AttendanceTypeEnum, AttendanceStatusEnum
-
-# def _get_unit_students(unit: Unit):
-#     unit_students = unit.students
-#     unit_student_dicts = [unit_student.to_dict() for unit_student in unit_students]
-
-#     return OperationResult(success=True, message="Unit student found", data=unit_student_dicts)
 
 
 def get_unit_list_for_a_catechist(catechist: Catechist, study_year_code: str):
@@ -294,3 +289,175 @@ def update_student_exam_score_in_a_unit(unit_code, exam_id, student_code, score)
     db.session.flush()
 
     return OperationResult(success=True, message="Exam score updated")
+
+def __get_unit_attendances_for_year_end(unit: Unit):
+    grade_schedules = GradeSchedule.get_schedules_for_grade(unit.grade)
+    grade_schedules_ids = [grade_schedule.id for grade_schedule in grade_schedules]
+
+    unit_students = unit.students
+    unit_student_ids = [unit_student.id for unit_student in unit_students]
+
+    student_attendance_list = (
+        StudentAttendance.find_by_student_ids_and_grade_schedule_ids(
+            unit_student_ids, grade_schedules_ids
+        )
+    )
+    
+    result_dict = dict()
+
+    for student in unit_students:
+        result_dict[student.code] = dict(
+            details=[]
+        )
+
+        student_related_attendance_entries = list(
+            filter(
+                lambda student_attendance: student_attendance.student_id == student.id,
+                student_attendance_list,
+            )
+        )
+
+        for grade_schedule in grade_schedules:
+            attendance_entry = dict(
+                date=grade_schedule.date,
+                mass_status=None,
+                lesson_status=None,
+            )
+
+            if grade_schedule.is_mass_attendance_check:
+                existing_mass_attendance_entry = next(
+                    (
+                        student_attendance
+                        for student_attendance in student_related_attendance_entries
+                        if student_attendance.grade_schedule_id == grade_schedule.id
+                        and student.id == student_attendance.student_id
+                        and student_attendance.type == AttendanceTypeEnum.MASS
+                    ),
+                    None,
+                )
+                if existing_mass_attendance_entry is None:
+                    attendance_entry["mass_status"] = AttendanceStatusEnum.ABSENT.value
+                else:
+                    attendance_entry["mass_status"] = (
+                        existing_mass_attendance_entry.status.value
+                    )
+
+            if grade_schedule.is_lesson_attendance_check:
+                existing_lesson_attendance_entry = next(
+                    (
+                        student_attendance
+                        for student_attendance in student_related_attendance_entries
+                        if student_attendance.grade_schedule_id == grade_schedule.id
+                        and student.id == student_attendance.student_id
+                        and student_attendance.type == AttendanceTypeEnum.LESSON
+                    ),
+                    None,
+                )
+                if existing_lesson_attendance_entry is None:
+                    attendance_entry["lesson_status"] = (
+                        AttendanceStatusEnum.ABSENT.value
+                    )
+                else:
+                    attendance_entry["lesson_status"] = (
+                        existing_lesson_attendance_entry.status.value
+                    )
+            
+            result_dict[student.code]["details"].append(attendance_entry)
+        
+        result_dict[student.code]["mass_total_present"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.PRESENT.value)
+        result_dict[student.code]["mass_total_leave"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.LEAVE.value)
+        result_dict[student.code]["mass_total_absent"] = sum(1 for detail in result_dict[student.code]["details"] if detail["mass_status"] == AttendanceStatusEnum.ABSENT.value)
+        result_dict[student.code]["lesson_total_present"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.PRESENT.value)
+        result_dict[student.code]["lesson_total_leave"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.LEAVE.value)
+        result_dict[student.code]["lesson_total_absent"] = sum(1 for detail in result_dict[student.code]["details"] if detail["lesson_status"] == AttendanceStatusEnum.ABSENT.value)
+        result_dict[student.code]["mass_total"] = result_dict[student.code]["mass_total_present"] + result_dict[student.code]["mass_total_leave"] + result_dict[student.code]["mass_total_absent"]
+        result_dict[student.code]["lesson_total"] = result_dict[student.code]["lesson_total_present"] + result_dict[student.code]["lesson_total_leave"] + result_dict[student.code]["lesson_total_absent"]
+        
+    return result_dict
+
+def __get_unit_score_for_year_end(unit: Unit):
+    all_grade_exams = unit.grade.exams
+    all_exam_ids = [exam.id for exam in all_grade_exams]
+
+    unit_students = unit.students
+    unit_student_ids = [unit_student.id for unit_student in unit_students]
+
+    all_exam_scores = ExamScore.find_by_student_ids_and_exam_ids(unit_student_ids, all_exam_ids)
+
+    result_dict = dict()
+
+    for student in unit_students:
+        result_dict[student.code] = dict(
+            details=[],
+            final_average=0
+        )
+
+        total_score = 0
+        total_factor = 0
+
+        for exam in all_grade_exams:
+            exam_score = next(
+                (
+                    exam_score
+                    for exam_score in all_exam_scores
+                    if exam_score.student_id == student.id
+                    and exam_score.exam_id == exam.id
+                ),
+                None,
+            )
+            if exam_score is None:
+                total_score += 0
+                total_factor += exam.factor
+                result_dict[student.code]["details"].append(
+                    {
+                        "exam": exam.to_dict(),
+                        "score": None,
+                    }
+                )
+            else:
+                total_score += exam_score.score * exam.factor
+                total_factor += exam.factor
+                result_dict[student.code]["details"].append(
+                    {
+                        "exam": exam.to_dict(),
+                        "score": exam_score.score,
+                    }
+                )
+        
+        result_dict[student.code]["final_average"] = total_score / total_factor if total_factor > 0 else 0
+        
+    return result_dict
+
+def get_unit_year_end_statistics(unit_code):
+    unit = Unit.find_by_code(unit_code)
+    
+    if unit is None:
+        return OperationResult(success=False, message="Unit not found")
+
+    unit_students = unit.students
+
+    attendance_dict = __get_unit_attendances_for_year_end(unit)
+    exam_scores_dict = __get_unit_score_for_year_end(unit)
+
+    result = unit.to_dict()
+
+    # result["students"] = list(map(lambda student: student.to_dict(basic_info_only=True), unit_students))
+    result["students"] = []
+
+    for student in unit_students:
+        student_dict = student.to_dict(basic_info_only=True)
+        student_dict["attendances"] = attendance_dict[student_dict.get("code")]
+        student_dict["exam_scores"] = exam_scores_dict[student_dict.get("code")]
+        
+        year_end_result = StudyYearResult.get_by_student_and_study_year(student.id, unit.grade.study_year.id)
+        if year_end_result:
+            student_dict["year_end_result"] = year_end_result.to_dict()
+        else:
+            default_result_entry = StudyYearResult.create_default(student.id, unit.grade.study_year.id)
+            default_result_entry.student = student
+            default_result_entry.study_year = unit.grade.study_year
+            student_dict["year_end_result"] = default_result_entry.to_dict()
+    
+        result["students"].append(student_dict)
+
+    return OperationResult(success=True, message="Year-end statistics calculated", data=result)

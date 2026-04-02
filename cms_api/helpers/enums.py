@@ -48,3 +48,13 @@ class ContactRelationTypeEnum(enum.Enum):
     AUNT = "aunt"
     UNCLE = "uncle"
     OTHER = "other"
+
+class StudyYearResultEnum(enum.Enum):
+    PASSED="passed"
+    FAILED="failed"
+
+class RankingInUnitEnum(enum.Enum):
+    FIRST="first"
+    SECOND="second"
+    THIRD="third"
+    ENCOURAGEMENT="encouragement"

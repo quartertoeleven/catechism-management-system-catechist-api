@@ -42,3 +42,8 @@ class ExamScore(db.Model):
     @classmethod
     def find_by_student_and_exam(cls, student: Student, exam: Exam) -> "ExamScore":
         return cls.query.filter_by(student_id=student.id, exam_id=exam.id).first()
+    
+    @classmethod
+    def find_by_student_ids_and_exam_ids(cls, student_ids: list[UUID], exam_ids: list[int]) -> list["ExamScore"]:
+        return cls.query.filter(cls.student_id.in_(student_ids), cls.exam_id.in_(exam_ids)).all()
+
