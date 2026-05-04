@@ -424,7 +424,7 @@ def __get_unit_score_for_year_end(unit: Unit):
                     }
                 )
         
-        result_dict[student.code]["final_average"] = total_score / total_factor if total_factor > 0 else 0
+        result_dict[student.code]["final_average"] = round(total_score / total_factor, 1) if total_factor > 0 else 0
         
     return result_dict
 
